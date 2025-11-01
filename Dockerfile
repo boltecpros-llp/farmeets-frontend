@@ -2,7 +2,7 @@
 FROM node:18 AS build
 WORKDIR /app
 COPY . .
-RUN npm install && npm run build -- --output-path=dist
+RUN npm install --force && npm run build -- --output-path=dist
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
