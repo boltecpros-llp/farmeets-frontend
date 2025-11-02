@@ -12,6 +12,10 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
   styleUrl: './blog-details.scss',
 })
 export class BlogDetails implements OnInit {
+  public facebookShareUrl = '';
+  public linkedinShareUrl = '';
+  public whatsappShareUrl = '';
+  public xShareUrl = '';
   public likeDislike: boolean | null = null;
   public likeCount: number = 0;
   public dislikeCount: number = 0;
@@ -20,6 +24,9 @@ export class BlogDetails implements OnInit {
   public newComment: string = '';
   public isSubmittingComment = false;
   public commentsLoading = false;
+
+  public currentUrl: string = '';
+  public copySuccess = false;
 
   onLikeDislike(like: boolean) {
     let referenceId = this.pageData?.id || this.blogId;
@@ -98,6 +105,13 @@ export class BlogDetails implements OnInit {
   public blogId!: string;
 
   ngOnInit() {
+    this.currentUrl = window.location.href;
+    // Build share URLs
+    const shareUrl = encodeURIComponent(this.pageData?.shareUrl || this.currentUrl);
+    this.facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+    this.linkedinShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`;
+    this.whatsappShareUrl = `https://wa.me/?text=${shareUrl}`;
+    this.xShareUrl = `https://x.com/intent/tweet?url=${shareUrl}`;
     this.blogId = this.route.snapshot.paramMap.get('blogId') as string;
     if (this.blogId) {
       this.api.get(`/posts/posts/${this.blogId}/`).subscribe({
@@ -130,6 +144,15 @@ export class BlogDetails implements OnInit {
           this.dislikeCount = 50;
           this.comments = [];
         }
+      });
+    }
+  }
+
+  copyUrl() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(this.pageData?.shareUrl || this.currentUrl).then(() => {
+        this.copySuccess = true;
+        setTimeout(() => this.copySuccess = false, 2000);
       });
     }
   }
