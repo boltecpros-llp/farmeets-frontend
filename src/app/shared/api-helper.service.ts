@@ -42,8 +42,8 @@ export class ApiHelperService {
     );
   }
 
-  put<T>(url: string, body: any, options: any = {}): Observable<HttpEvent<T>> {
-    return this.http.put<T>(this.fullUrl(url), body, { ...options, headers: this.getHeaders() }).pipe(
+  patch<T>(url: string, body: any, options: any = {}): Observable<HttpEvent<T>> {
+    return this.http.patch<T>(this.fullUrl(url), body, { ...options, headers: this.getHeaders() }).pipe(
       catchError((err: any) => this.handleError(err))
     );
   }

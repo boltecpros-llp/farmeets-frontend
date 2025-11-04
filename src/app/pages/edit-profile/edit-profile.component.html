@@ -3,8 +3,12 @@
     <div class="col-md-8 col-lg-6">
       <div class="card shadow-sm mb-4">
         <div class="card-body text-center">
-          <div class="mb-3">
+          <div class="mb-3 position-relative d-inline-block">
             <img [src]="user?.profilePicture || 'https://ui-avatars.com/api/?name=' + (user?.firstName || '') + '+' + (user?.lastName || '')" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
+            <button type="button" class="btn btn-light btn-sm position-absolute top-0 end-0 translate-middle p-1 px-2 border shadow" style="border-radius: 50%;" (click)="triggerFileInput()" aria-label="Change profile picture">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <input type="file" #fileInput accept="image/*" class="d-none" (change)="onProfilePicChange($event)">
           </div>
           <form [formGroup]="profileForm">
             <div class="row g-3">

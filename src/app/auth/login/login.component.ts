@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -22,6 +21,8 @@ export class LoginComponent implements OnInit {
     showForm = false;
     loginMode: 'email' | 'mobile' | 'both' = 'email';
     googleClientId = '625948552257-iejk25tp92hvbof5fp7m7u1nv3dvvpri.apps.googleusercontent.com';
+    linkedinClientId = '774xz38pvep7oq';
+    linkedinRedirectUri = window.location.origin + '/auth/login';
     dataModel = 'accounts/users/login/';
     redirectUrl: string | null = null;
 
@@ -66,6 +67,11 @@ export class LoginComponent implements OnInit {
                 hasTokenOrCode = true;
                 this.showForm = false;
                 this.onGoogleLogin(params['code'], params['state']);
+                return;
+            } else if (params['linkedinCode']) {
+                hasTokenOrCode = true;
+                this.showForm = false;
+                this.onLinkedinLogin(params['linkedinCode'], params['state']);
                 return;
             }
 
@@ -143,6 +149,21 @@ export class LoginComponent implements OnInit {
 
     onTokenLogin(token: string) {
         this.userIdentity.login({ credential: token }, 'users/jwt-token-login/')
+            .then(() => this.redirectPostLogin())
+            .catch(() => this.showForm = true);
+    }
+
+    startLinkedinOAuth() {
+        const clientId = this.linkedinClientId;
+        const redirectUri = encodeURIComponent(this.linkedinRedirectUri);
+        const state = encodeURIComponent(Math.random().toString(36).substring(2));
+        const scope = encodeURIComponent('r_liteprofile r_emailaddress');
+        const oauthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+        window.location.href = oauthUrl;
+    }
+
+    onLinkedinLogin(code: string, state: string | null) {
+        this.userIdentity.login({ credential: code, state }, 'accounts/api/linkedin-login/')
             .then(() => this.redirectPostLogin())
             .catch(() => this.showForm = true);
     }
