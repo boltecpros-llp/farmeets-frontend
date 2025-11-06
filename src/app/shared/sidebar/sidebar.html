@@ -3,12 +3,13 @@
         <h5>Welcome</h5>
         <ul class="list-group mt-2">
             <li class="list-group-item">
-                <a routerLink="/dashboard" class="d-block py-1 text-decoration-none">
+                <a routerLink="/dashboard" (click)="onGroupClick(null)" class="d-block py-1 text-decoration-none">
                     <i class="bi bi-speedometer2 me-1"></i> Dashboard
                 </a>
             </li>
             <li class="list-group-item">
-                <a routerLink="/dashboard/category/general" class="d-block py-1 text-decoration-none">
+                <a routerLink="/dashboard/category/general" (click)="onGroupClick('general')"
+                    class="d-block py-1 text-decoration-none">
                     <i class="bi bi-chat-dots me-1"></i> Discussions
                 </a>
             </li>
@@ -17,16 +18,18 @@
     <div class="mb-4">
         <h6>My Groups</h6>
         <ul class="list-group mb-2">
-            <li class="list-group-item d-flex flex-column align-items-start" *ngFor="let group of myGroups" style="cursor:pointer;">
+            <li class="list-group-item d-flex flex-column align-items-start" *ngFor="let group of myGroups"
+                style="cursor:pointer;">
                 <div class="d-flex align-items-center w-100">
                     <a [routerLink]="['./category', group.group.id]" (click)="onGroupClick(group)"
                         class="d-flex align-items-center text-decoration-none w-100">
                         <ng-container *ngIf="group.group?.images && group.group?.images.length > 0; else noGroupImg">
-                            <img [src]="group.group?.images[0]" [alt]="group.group?.name"
-                                class="rounded me-2" width="32" height="32" style="object-fit:cover;">
+                            <img [src]="group.group?.images[0]" [alt]="group.group?.name" class="rounded me-2"
+                                width="32" height="32" style="object-fit:cover;">
                         </ng-container>
                         <ng-template #noGroupImg>
-                            <div class="bg-light d-flex align-items-center justify-content-center rounded me-2" style="width:32px; height:32px;">
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded me-2"
+                                style="width:32px; height:32px;">
                                 <i class="bi bi-image fs-5 text-secondary"></i>
                             </div>
                         </ng-template>
@@ -44,11 +47,12 @@
                 <a [routerLink]="['./category', group.id]" (click)="onGroupClick(group)"
                     class="d-flex align-items-center text-decoration-none w-100">
                     <ng-container *ngIf="group.images && group.images.length > 0; else noExploreImg">
-                        <img [src]="group.images[0]" alt="{{ group.name }}"
-                            class="rounded me-2" width="32" height="32" style="object-fit:cover;">
+                        <img [src]="group.images[0]" alt="{{ group.name }}" class="rounded me-2" width="32" height="32"
+                            style="object-fit:cover;">
                     </ng-container>
                     <ng-template #noExploreImg>
-                        <div class="bg-light d-flex align-items-center justify-content-center rounded me-2" style="width:32px; height:32px;">
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded me-2"
+                            style="width:32px; height:32px;">
                             <i class="bi bi-image fs-5 text-secondary"></i>
                         </div>
                     </ng-template>

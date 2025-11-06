@@ -147,6 +147,9 @@ export class CreatePostComponent {
             if (!cats.includes(this.categoryId)) {
                 this.form.patchValue({ categories: [this.categoryId] });
             }
+        } else if (this.categoryId === 'general') {
+            // For general posts, do not set categories
+            this.form.patchValue({ categories: [] });
         }
         if (this.form.valid) {
             this.api.post('/posts/posts/', this.form.value).subscribe({

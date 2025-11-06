@@ -20,9 +20,9 @@ export class Sidebar implements OnInit {
 
   constructor(private api: ApiHelperService, private router: Router, private route: ActivatedRoute) { }
   onGroupClick(group: any) {
-    this.selectedGroup = group;
+    this.selectedGroup = group == 'general' ? null : group;
     // Navigation now handled by [routerLink] in template; only emit event on click
-    this.groupSelected.emit({group: group.group || group, myGroups: this.myGroups, exploreGroups: this.exploreGroups});
+    this.groupSelected.emit({group: group?.group || group, myGroups: this.myGroups, exploreGroups: this.exploreGroups});
   }
 
   onCreatePost(group: any) {

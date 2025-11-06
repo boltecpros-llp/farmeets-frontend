@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ApiHelperService } from '../../shared/api-helper.service';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-main',
@@ -13,9 +13,11 @@ import { RouterModule } from '@angular/router';
 })
 export class DashboardMain implements OnInit {
   categories: any[] = [];
+  selectedCategoryId: string | null = null;
 
   constructor(
-    private api: ApiHelperService
+    private api: ApiHelperService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -30,6 +32,11 @@ export class DashboardMain implements OnInit {
       error: () => {
         this.categories = [];
       }
+    });
+
+    // Listen for route changes to set selectedCategoryId
+    this.route.paramMap.subscribe((params: any) => {
+      this.selectedCategoryId = params.get('categoryId');
     });
   }
 }

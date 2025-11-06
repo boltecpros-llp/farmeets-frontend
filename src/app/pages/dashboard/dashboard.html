@@ -30,12 +30,13 @@
                         </ng-template>
                     </div>
                     <div class="col-8">
-                        <h2 class="fw-bold mb-3">{{ selectedGroup?.name || 'Select a group' }}</h2>
+                        <h2 class="fw-bold mb-3" *ngIf="selectedGroup !== 'general'">{{ selectedGroup?.name }}</h2>
+                        <h2 class="fw-bold mb-3" *ngIf="selectedGroup === 'general'">Discussions</h2>
                         <div *ngIf="selectedGroup?.description" class="mb-2 text-muted">{{ selectedGroup.description }}</div>
                         <div class="d-flex my-3">
-                            <button class="btn btn-success btn-sm rounded" *ngIf="isMyGroupApproved" (click)="onCreatePost()">Create Post</button>
+                            <button class="btn btn-success btn-sm rounded" *ngIf="isMyGroupApproved || selectedGroup === 'general'" (click)="onCreatePost()">Create Post</button>
                             <span class="badge bg-warning text-dark align-self-center" *ngIf="isGroupPending">Pending Request</span>
-                            <button class="btn btn-outline-primary btn-sm rounded" *ngIf="selectedGroup && !isGroupRequested" (click)="onJoinGroup()">Join</button>
+                            <button class="btn btn-outline-primary btn-sm rounded" *ngIf="selectedGroup && !isGroupRequested && selectedGroup !== 'general'" (click)="onJoinGroup()">Join</button>
                         </div>
                     </div>
                 </div>

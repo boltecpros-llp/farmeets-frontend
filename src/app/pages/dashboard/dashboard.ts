@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
@@ -25,7 +24,7 @@ export class Dashboard {
 
   // Returns the user's group object if present, else null
   get myGroupObj() {
-    if (!this.selectedGroup) return null;
+    if (!this.selectedGroup?.id) return null;
     return this.myGroups.find(g => g.group.id === this.selectedGroup.id) || null;
   }
 
@@ -51,13 +50,16 @@ export class Dashboard {
   }
 
   onCreatePost() {
-    if (this.selectedGroup) {
+    if (this.selectedGroup?.id && this.selectedGroup.id !== 'general') {
       this.router.navigate(['/dashboard', this.selectedGroup.id, 'create-post']);
+    } else {
+      // For general group, do not use category/group id
+      this.router.navigate(['/dashboard', 'general', 'create-post']);
     }
   }
 
   onJoinGroup() {
-    if (!this.selectedGroup) return;
+    if (!this.selectedGroup?.id) return;
     const groupId = this.selectedGroup.id;
     const userId = this.userIdentity.getUserId();
     this.api.post('/posts/groups/subscribe/', { group_id: groupId }).subscribe({

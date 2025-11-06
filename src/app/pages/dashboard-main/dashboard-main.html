@@ -25,4 +25,9 @@
       No categories found.
     </div>
   </div>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" [routerLink]="['/dashboard', 'general', 'create-post']" [disabled]="selectedCategoryId !== 'general'">
+      Create Post
+    </button>
+  </div>
 </div>
