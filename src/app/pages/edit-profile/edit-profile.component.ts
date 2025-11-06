@@ -35,6 +35,8 @@ export class EditProfileComponent implements OnInit {
           this.api.patch('/accounts/users/' + this.user.id + '/', { profilePicture: url, email: this.user.email }).subscribe({
             next: () => {
               this.user.profilePicture = url;
+              // Update local storage using UserIdentityService
+              this.userIdentity.setUserDetails({ profilePicture: url });
               this.uploadingProfilePic = false;
             },
             error: () => {

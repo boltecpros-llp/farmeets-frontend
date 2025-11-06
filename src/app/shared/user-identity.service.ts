@@ -40,7 +40,8 @@ export class UserIdentityService implements OnDestroy {
 
   public setUserDetails(user: any) {
     let userDetails = this._userDetails || {};
-    Object.assign(userDetails, user);
+    // Merge new attributes into existing userDetails
+    userDetails = { ...userDetails, ...user };
     localStorage.setItem('userDetails', JSON.stringify(userDetails));
     this._userDetails = userDetails;
   }
