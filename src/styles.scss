@@ -1,33 +1,55 @@
+// Clamp 2 lines utility
+.clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 // 1. Override Bootstrap variables BEFORE importing Bootstrap
-$primary:   #0076c0;
+$primary: #0076c0;
 $secondary: #001e31;
-$tertiary:  #f58220;
+$tertiary: #f58220;
 $quaternary: #6dbb45;
-$success:   #4caf50;
-$info:      #c62828;
-$warning:   #ffb300;
-$danger:    #00a0c6;
-$light:     #f4f8fb;
-$dark:      #1a2a33;
+$success: #4caf50;
+$info: #c62828;
+$warning: #ffb300;
+$danger: #00a0c6;
+$light: #f4f8fb;
+$dark: #1a2a33;
 
 // 2. Extend Bootstrap theme colors map
 $theme-colors: (
-  "primary": $primary,
-  "secondary": $secondary,
-  "tertiary": $tertiary,
-  "quaternary": $quaternary,
-  "success": $success,
-  "info": $info,
-  "warning": $warning,
-  "danger": $danger,
-  "light": $light,
-  "dark": $dark
+    "primary": $primary,
+    "secondary": $secondary,
+    "tertiary": $tertiary,
+    "quaternary": $quaternary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark
 );
 
 
 // Import Bootstrap SCSS after variable overrides
-
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: $spacer * .25,
+    2: $spacer * .5,
+    3: $spacer,
+    4: $spacer * 1.5,
+    5: $spacer * 3,
+    6: $spacer * 4,
+    7: $spacer * 5,
+    8: $spacer * 6,
+    9: $spacer * 7,
+    10: $spacer * 8,
+);
 
 // Import Bootstrap SCSS after variable overrides
 @import 'bootstrap/scss/bootstrap';

@@ -1,3 +1,4 @@
+// ...existing imports...
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +19,16 @@ import { HttpEventType, HttpEvent, HttpClient } from '@angular/common/http';
     styleUrls: ['./create-post.component.scss']
 })
 export class CreatePostComponent {
+    isCategorySelected(id: string): boolean {
+        return this.selectedCategories.some(c => c.id === id);
+    }
+    step = 1;
+    selectedLanguage: any = null;
+    categories: any[] = [];
+    loadingCategories = false;
+    selectedCategories: any[] = [];
+    languages: any[] = [];
+    loadingLanguages = false;
     form: FormGroup;
     imagePreviews: string[] = [];
     videoPreviews: string[] = [];
@@ -48,7 +59,8 @@ export class CreatePostComponent {
             description: ['', Validators.required],
             categories: [[]],
             images: [[]],
-            videos: [[]]
+            videos: [[]],
+            language: ['']
         });
         // Set categoryId from route params if present
         this.route.paramMap.subscribe(params => {
@@ -57,6 +69,57 @@ export class CreatePostComponent {
                 this.form.patchValue({ categories: [this.categoryId] });
             }
         });
+    }
+
+    ngOnInit() {
+        this.loadingLanguages = true;
+        this.api.get('/posts/languages/').subscribe({
+            next: (res: any) => {
+                this.languages = Array.isArray(res) ? res : (res?.results || []);
+                this.loadingLanguages = false;
+            },
+            error: () => {
+                this.loadingLanguages = false;
+            }
+        });
+    }
+
+    selectLanguage(lang: any) {
+        this.selectedLanguage = lang;
+        this.form.patchValue({ language: lang.id });
+        this.step = 2;
+        this.fetchCategories(lang.isoCode);
+        console.log(this.form.value)
+    }
+
+    fetchCategories(languageCode: string) {
+        this.loadingCategories = true;
+        this.api.get('/posts/categories/hierarchy/').subscribe({
+            next: (res: any) => {
+                this.categories = Array.isArray(res) ? res : (res?.results || []);
+                this.loadingCategories = false;
+            },
+            error: () => {
+                this.loadingCategories = false;
+            }
+        });
+    }
+
+    selectCategory(category: any) {
+        const idx = this.selectedCategories.findIndex((c) => c.id === category.id);
+        if (idx === -1) {
+            this.selectedCategories.push(category);
+        } else {
+            this.selectedCategories.splice(idx, 1);
+        }
+        const ids = this.selectedCategories.map((c) => c.id);
+        this.form.patchValue({ categories: ids });
+        console.log(this.form.value)
+    }
+
+    onLanguageChange(event: Event) {
+        const select = event.target as HTMLSelectElement;
+        this.form.patchValue({ language: select.value });
     }
 
     onImageChange(event: any) {
@@ -122,8 +185,8 @@ export class CreatePostComponent {
         // formData.append('meta', JSON.stringify({ foo: 'bar' })); // extra JSON data
 
         // Do NOT set Content-Type header manually; let the browser set it
-        // Use a generic upload endpoint, adjust as needed
-        const apiPath = 'https://api.atlasbyargoatlantic.com/api/posts/uploads/';
+        // Use baseUrl from ApiHelperService
+        const apiPath = this.api.baseUrl + '/posts/uploads/';
 
         const token = localStorage.getItem('token');
         return this.http.post<any>(apiPath, formData, {
@@ -141,16 +204,7 @@ export class CreatePostComponent {
     }
 
     onSubmit() {
-        // Ensure categoryId is set in categories before submit
-        if (this.categoryId && this.categoryId !== 'general') {
-            const cats = this.form.value.categories || [];
-            if (!cats.includes(this.categoryId)) {
-                this.form.patchValue({ categories: [this.categoryId] });
-            }
-        } else if (this.categoryId === 'general') {
-            // For general posts, do not set categories
-            this.form.patchValue({ categories: [] });
-        }
+        console.log(this.form.value)
         if (this.form.valid) {
             this.api.post('/posts/posts/', this.form.value).subscribe({
                 next: (res) => {

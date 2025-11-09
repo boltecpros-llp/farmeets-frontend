@@ -1,21 +1,41 @@
+<!-- Mobile Bottom Tab Bar -->
+<div class="sidebar-mobile d-md-none">
+    <div class="sidebar-mobile-list">
+        <a routerLink="./" (click)="onGroupClick(null)" class="sidebar-mobile-item">
+            <span class="sidebar-mobile-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="sidebar-mobile-name">Home</span>
+        </a>
+        <a routerLink="./general/create-post" (click)="onGroupClick('general')" class="sidebar-mobile-item">
+            <span class="sidebar-mobile-icon"><i class="bi bi-chat-dots"></i></span>
+            <span class="sidebar-mobile-name">Create Post</span>
+        </a>
+        <!-- Add more tab items as needed -->
+    </div>
+</div>
 <div class="sidebar-sticky pt-3">
     <div class="mb-4">
         <h5>Welcome</h5>
         <ul class="list-group mt-2">
             <li class="list-group-item">
-                <a routerLink="/dashboard" (click)="onGroupClick(null)" class="d-block py-1 text-decoration-none">
-                    <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                <a routerLink="./" (click)="onGroupClick(null)" class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-speedometer2 me-1"></i> Home
                 </a>
             </li>
-            <li class="list-group-item">
-                <a routerLink="/dashboard/category/general" (click)="onGroupClick('general')"
+            <!-- <li class="list-group-item">
+                <a routerLink="./category/general" (click)="onGroupClick('general')"
                     class="d-block py-1 text-decoration-none">
                     <i class="bi bi-chat-dots me-1"></i> Discussions
+                </a>
+            </li> -->
+            <li class="list-group-item">
+                <a routerLink="./general/create-post" (click)="onGroupClick('general')"
+                    class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-chat-dots me-1"></i> Create Post
                 </a>
             </li>
         </ul>
     </div>
-    <div class="mb-4">
+    <!-- <div class="mb-4">
         <h6>My Groups</h6>
         <ul class="list-group mb-2">
             <li class="list-group-item d-flex flex-column align-items-start" *ngFor="let group of myGroups"
@@ -60,5 +80,5 @@
                 </a>
             </li>
         </ul>
-    </div>
+    </div> -->
 </div>
