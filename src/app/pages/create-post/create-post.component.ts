@@ -48,7 +48,8 @@ export class CreatePostComponent {
             description: ['', Validators.required],
             categories: [[]],
             images: [[]],
-            videos: [[]]
+            videos: [[]],
+            hideAuthor: [false]
         });
         // Set categoryId from route params if present
         this.route.paramMap.subscribe(params => {

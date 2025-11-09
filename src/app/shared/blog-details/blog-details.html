@@ -30,11 +30,11 @@
 							<i class="bi bi-calendar me-1"></i>
 							<time>{{ pageData.publishStartDate | date }}</time>
 						</span>
-						<span *ngIf="pageData?.user?.name">
+						<span *ngIf="!pageData?.hideAuthor && pageData?.user?.name">
 							<i class="bi bi-person me-1"></i>
 							{{ pageData.user?.name }}
 						</span>
-						<span *ngIf="pageData?.author?.firstName && pageData?.author?.lastName">
+						<span *ngIf="!pageData?.hideAuthor && pageData?.author?.firstName && pageData?.author?.lastName">
 							<i class="bi bi-person me-1"></i>
 							{{ pageData.author?.firstName }} {{ pageData.author?.lastName }}
 						</span>

@@ -61,7 +61,12 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
     this.loading = true;
-    this.api.post(`/accounts/users/confirm-password-reset/?token=${this.token}`, {
+    
+    const queryString = Object.keys(this.route.snapshot.queryParams)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(this.route.snapshot.queryParams[key])}`)
+      .join('&');
+
+    this.api.post(`/accounts/users/confirm-password-reset/${this.token}/?${queryString}`, {
       newPassword,
       confirmPassword,
       token: this.token

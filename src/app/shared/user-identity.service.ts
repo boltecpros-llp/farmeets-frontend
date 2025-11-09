@@ -153,4 +153,22 @@ export class UserIdentityService implements OnDestroy {
     }
     return localStorage.getItem('userId') || '';
   }
+
+  /**
+   * Fetch fresh user details from API by userId
+   */
+  fetchUserDetailsFromApi(userId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.apiHelper.get(`/accounts/users/${userId}/`).subscribe({
+        next: (user: any) => {
+          this.setUserDetails(user);
+          resolve(user);
+        },
+        error: (err: any) => {
+          reject(err);
+        }
+      });
+    });
+  }
+  
 }
