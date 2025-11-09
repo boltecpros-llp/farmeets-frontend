@@ -18,12 +18,16 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     const isAuthenticated = this.userIdentity.isValidToken();
     if (isAuthenticated) {
       const user = this.userIdentity.userDetails;
-      if (user && user.adminVerified === false) {
-        this.router.navigate(['/']);
-        return false;
+      // Check for missing language or categories
+      console.log(user, user?.language, user?.categories);  
+      if (!user?.language || !user?.categories || user.categories.length === 0) {
+        if (next.routeConfig?.path !== 'auth/update-preference') {
+          this.router.navigate(['/auth/update-preference']);
+          return false;
+        }
       }
       if (next.routeConfig?.path?.includes('auth')) {
-        this.router.navigate(['dashboard']);
+        this.router.navigate(['/']);
         return false;
       }
       return true;
@@ -40,12 +44,16 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     const isAuthenticated = this.userIdentity.isValidToken();
     if (isAuthenticated) {
       const user = this.userIdentity.userDetails;
-      if (user && user.adminVerified === false) {
-        this.router.navigate(['/']);
-        return false;
+      // Check for missing language or categories
+      console.log(user, user?.language, user?.categories);
+      if (!user?.language || !user?.categories || user.categories.length === 0) {
+        if (childRoute.routeConfig?.path !== 'auth/update-preference') {
+          this.router.navigate(['/auth/update-preference']);
+          return false;
+        }
       }
       if (childRoute.routeConfig?.path?.includes('auth')) {
-        this.router.navigate(['dashboard']);
+        this.router.navigate(['/']);
         return false;
       }
       return true;
