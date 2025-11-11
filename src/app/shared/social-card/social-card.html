@@ -1,0 +1,95 @@
+<!-- Copy of blog-listing.html, adjust as needed for social-card specifics -->
+<ng-container *ngIf="blogs.length > 0; else noSocials">
+  <div class="social-card-container">
+    <div class="d-flex flex-column align-items-center justify-content-center w-100 gap-3" style="margin-top: 84px;">
+      <div *ngFor="let blog of blogs" class="w-100" style="height: 90vh;">
+        <div class="card post-card shadow overflow-hidden h-100">
+          <!-- Header -->
+          <div class="post-header d-flex align-items-center p-2 gap-2 position-absolute top-0 left-0 w-100 bg-dark bg-opacity-75 text-light">
+            <img class="rounded-circle" [src]="blog.owner?.profilePicture || '/assets/dashboard/avtar.png'" [alt]="blog.owner?.name" width="40" height="40">
+            <div>
+              <strong>{{ blog.owner?.name || 'Unknown' }}</strong>
+              <span class="d-block small"><i class="bi bi-calendar me-1"></i> {{ blog.created | date }}</span>
+            </div>
+            <span class="badge bg-warning ms-auto p-1 px-2">{{ blog.status }}</span>
+          </div>
+          <!-- Media -->
+          <div class="post-media position-relative d-flex align-items-center justify-content-center bg-dark flex-grow-1" style="height: 60vh;">
+            <ng-container *ngIf="blog.images?.length > 0">
+              <carousel *ngIf="blog.images.length > 1" [itemsPerSlide]="1" [noWrap]="false">
+                <ng-container *ngFor="let img of blog.images">
+                  <slide>
+                    <img [src]="img" alt="{{blog.title}}" class="w-100 h-100 object-fit-cover" />
+                  </slide>
+                </ng-container>
+              </carousel>
+              <img *ngIf="blog.images.length === 1" [src]="blog.images[0]" alt="{{blog.title}}" class="w-100 h-100 object-fit-cover" />
+            </ng-container>
+            <img *ngIf="!blog.images && blog.image" [src]="blog.image" alt="{{blog.title}}" class="w-100 h-100 object-fit-cover" />
+            <div *ngIf="(!blog.images || blog.images.length === 0) && !blog.image" class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
+              <i class="bi bi-image fs-1"></i>
+            </div>
+          </div>
+          <!-- Caption -->
+          <div class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
+               (click)="toggleCaption($event)">
+            <h6 class="m-0">{{ blog.title }}</h6>
+            <div class="clamp-text clamp-3 m-0 extra-content" [innerHTML]="blog.description"></div>
+          </div>
+          <!-- Actions -->
+          <div class="post-actions position-absolute d-flex flex-column gap-2 align-items-center" style="right: 16px; top: 50%; transform: translateY(-50%);">
+            <button class="btn btn-link p-0 text-white text-decoration-none"
+                    [class.active]="likeDislikeMap[blog.id] === true"
+                    (click)="onLikeDislike(blog, true)">
+              <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="likeDislikeMap[blog.id] === true"></i> {{ likeCountMap[blog.id] || blog.likes || 0 }}
+            </button>
+            <button class="btn btn-link p-0 text-white text-decoration-none"
+                    [class.active]="likeDislikeMap[blog.id] === false"
+                    (click)="onLikeDislike(blog, false)">
+              <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="likeDislikeMap[blog.id] === false"></i> {{ dislikeCountMap[blog.id] || blog.dislikes || 0 }}
+            </button>
+            <button class="btn btn-link p-0 text-white text-decoration-none"
+                    (click)="openCommentModal(blog)">
+              <i class="bi bi-chat-left-text me-1"></i> {{ (commentsMap[blog.id]?.length || blog.comments || 0) }}
+            </button>
+            <div ngbDropdown placement="bottom-end">
+              <button ngbDropdownToggle class="btn btn-link p-0 text-white text-decoration-none">
+                <i class="bi bi-share me-1"></i>
+              </button>
+              <div ngbDropdownMenu class="shadow">
+                <a ngbDropdownItem class="dropdown-item" [href]="facebookShareUrl" target="_blank"><i class="bi bi-facebook me-1"></i> Facebook</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="linkedinShareUrl" target="_blank"><i class="bi bi-linkedin me-1"></i> LinkedIn</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="whatsappShareUrl" target="_blank"><i class="bi bi-whatsapp me-1"></i> WhatsApp</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="xShareUrl" target="_blank"><i class="bi bi-twitter-x me-1"></i> X</a>
+                <button ngbDropdownItem class="dropdown-item" type="button" (click)="copyUrl(blog)"><i class="bi bi-clipboard me-1"></i> Copy Link</button>
+              </div>
+              <div *ngIf="copySuccess" class="small text-success mt-1">Link copied!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-template #noSocials>
+  <div class="text-center text-muted py-5">No social cards found.</div>
+</ng-template>
+
+<!-- Comment Modal -->
+<div class="modal fade" tabindex="-1" [class.show]="commentModalBlog" [style.display]="commentModalBlog ? 'block' : 'none'" *ngIf="commentModalBlog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Comments</h5>
+        <button type="button" class="btn-close" (click)="closeCommentModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let comment of commentsMap[commentModalBlog.id]">
+          <div class="border-bottom py-2">{{ comment.comment }}</div>
+        </div>
+        <textarea class="form-control mt-3" [(ngModel)]="newComment" rows="3" placeholder="Add a comment..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCommentModal()">Close</button>
+        <button type="button" class="btn btn-primary" [disabled]="isSubmittingComment || !newComment.trim()" (click)="submitComment(commentModalBlog)">Submit</button>
+      </div>

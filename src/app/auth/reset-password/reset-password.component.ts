@@ -61,7 +61,6 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
     this.loading = true;
-    
     const queryString = Object.keys(this.route.snapshot.queryParams)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(this.route.snapshot.queryParams[key])}`)
       .join('&');

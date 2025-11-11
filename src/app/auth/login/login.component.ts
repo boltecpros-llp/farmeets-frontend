@@ -121,7 +121,7 @@ export class LoginComponent implements OnInit {
     redirectPostLogin() {
         const user = this.userIdentity.userDetails;
         if (user && user.adminVerified === false) {
-            this.router.navigate(['/pending-for-approval']);
+            this.router.navigate(['/']);
         } else {
             this.router.navigate(['/dashboard']);
         }

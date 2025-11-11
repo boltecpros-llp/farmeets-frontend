@@ -7,7 +7,7 @@ import { ErrorPopupService } from './error-popup.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiHelperService {
-  private baseUrl = 'https://api.atlasbyargoatlantic.com/api';
+  public baseUrl = 'https://app.farmeets.com/api';
 
   constructor(
     private http: HttpClient,

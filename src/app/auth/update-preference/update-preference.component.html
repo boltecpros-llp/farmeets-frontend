@@ -1,0 +1,60 @@
+<div class="container py-4" style="max-width:400px;">
+  <h3>Update Preferences</h3>
+  <!-- Step 1: Language Selection -->
+  <div *ngIf="step === 1" class="stepper-step animate__animated animate__fadeIn">
+    <h4 class="mb-3 text-center">Select Language</h4>
+    <div class="row g-2">
+      <div class="col-6 col-sm-4" *ngFor="let lang of languages">
+        <div class="card text-center p-2" (click)="selectLanguage(lang)" style="cursor:pointer;">
+          <div class="ratio ratio-1x1 d-flex align-items-center justify-content-center">
+            <span class="fs-1 w-100 h-100 d-flex align-items-center justify-content-center">{{ lang.icon || lang.nativeName || lang.name }}</span>
+          </div>
+          <div class="mt-2 fw-bold">{{ lang.name }}</div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="loadingLanguages" class="small text-muted text-center mt-3">Loading languages...</div>
+    <button class="btn btn-link mt-3" (click)="skip()">Skip</button>
+  </div>
+
+  <!-- Step 2: Category Selection -->
+  <div *ngIf="step === 2" class="stepper-step animate__animated animate__fadeIn">
+    <div class="d-flex align-items-center mb-2">
+      <h4 class="mb-3 flex-grow-1">Select Category</h4>
+      <button class="ms-auto btn btn-primary" [disabled]="selectedCategories.length === 0" (click)="savePreferences()">Save</button>
+    </div>
+    <div *ngIf="loadingCategories" class="small text-muted text-center">Loading categories...</div>
+    <div class="row g-2">
+      <div class="col-12" *ngFor="let cat of categories">
+        <div class="card p-2 mb-2" style="cursor:pointer;">
+          <div class="d-flex align-items-center start">
+            <div class="w-25 ratio ratio-4x3 me-2">
+              <img [src]="cat.images && cat.images[0] || cat.image" alt="Category" class="object-fit-cover">
+            </div>
+            <div class="fw-bold clamp-2">{{ cat.names?.[selectedLanguage?.isoCode] || cat.names?.['en'] || cat.name }}</div>
+          </div>
+          <div *ngIf="cat.children?.length" class="mt-2 ms-4">
+            <div class="row g-1">
+              <div class="col-6" *ngFor="let sub of cat.children">
+                <div class="card p-1 d-flex flex-row align-items-center"
+                  (click)="$event.stopPropagation(); selectCategory(sub)"
+                  [class.border-success]="isCategorySelected(sub.id)"
+                  [class.bg-success-subtle]="isCategorySelected(sub.id)"
+                  style="cursor:pointer;">
+                  <div class="w-25 ratio ratio-4x3 me-2">
+                    <img [src]="sub.images && sub.images[0] || sub.image" alt="Sub Category" class="object-fit-cover">
+                  </div>
+                  <div class="clamp-2">{{ sub.names?.[selectedLanguage?.isoCode] || sub.names?.['en'] || sub.name }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button class="btn btn-primary" [disabled]="selectedCategories.length === 0" (click)="savePreferences()">Save</button>
+      <button class="btn btn-link ms-2" (click)="skip()">Skip</button>
+    </div>
+  </div>
+</div>

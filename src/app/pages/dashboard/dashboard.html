@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mt-8">
     <div class="row g-3">
 
         <div class="col-md-3 d-none d-md-block sidebar">
@@ -6,41 +6,6 @@
         </div>
 
         <div class="col-md-9 ms-sm-auto px-4 py-4">
-
-            <div class="card card-body mb-3" *ngIf="selectedGroup">
-                <div class="row d-flex align-items-center justify-content-center">
-                    <div class="col-4">
-                        <div class="ratio ratio-4x3" *ngIf="selectedGroup?.images && selectedGroup.images.length > 0; else noGroupImg">
-                            <img
-                                [src]="selectedGroup.images[0]"
-                                [alt]="selectedGroup?.name"
-                                class="rounded me-2"
-                                width="32"
-                                height="32"
-                                style="object-fit:cover;"
-                                ngOptimizedImage
-                            >
-                        </div>
-                        <ng-template #noGroupImg>
-                            <div class="ratio ratio-4x3">
-                                <div class="bg-light d-flex align-items-center justify-content-center rounded me-2" style="width:100%; height:100%;">
-                                    <i class="bi bi-image fs-1 text-secondary"></i>
-                                </div>
-                            </div>
-                        </ng-template>
-                    </div>
-                    <div class="col-8">
-                        <h2 class="fw-bold mb-3" *ngIf="selectedGroup !== 'general'">{{ selectedGroup?.name }}</h2>
-                        <h2 class="fw-bold mb-3" *ngIf="selectedGroup === 'general'">Discussions</h2>
-                        <div *ngIf="selectedGroup?.description" class="mb-2 text-muted">{{ selectedGroup.description }}</div>
-                        <div class="d-flex my-3">
-                            <button class="btn btn-success btn-sm rounded" *ngIf="isMyGroupApproved || selectedGroup === 'general'" (click)="onCreatePost()">Create Post</button>
-                            <span class="badge bg-warning text-dark align-self-center" *ngIf="isGroupPending">Pending Request</span>
-                            <button class="btn btn-outline-primary btn-sm rounded" *ngIf="selectedGroup && !isGroupRequested && selectedGroup !== 'general'" (click)="onJoinGroup()">Join</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <router-outlet></router-outlet>
         </div>
     </div>
