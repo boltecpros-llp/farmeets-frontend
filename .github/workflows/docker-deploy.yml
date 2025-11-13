@@ -69,4 +69,4 @@ jobs:
               -p $PORT:80 \
               $IMAGE
 
-            docker image prune -af
+            docker image prune -af 
