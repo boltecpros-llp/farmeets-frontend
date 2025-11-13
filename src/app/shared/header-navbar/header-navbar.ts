@@ -17,7 +17,7 @@ export class HeaderNavbar {
   constructor(public userIdentity: UserIdentityService, public router: Router) {}
 
   get isDashboardRoute(): boolean {
-    return this.router.url.startsWith('/dashboard');
+    return this.router.url == '/';
   }
 
   logout() {

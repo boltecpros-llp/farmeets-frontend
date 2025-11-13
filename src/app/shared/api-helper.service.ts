@@ -19,10 +19,12 @@ export class ApiHelperService {
     try {
       token = localStorage.getItem('token') || '';
     } catch {}
-    return new HttpHeaders({
-      'Authorization': token ? `Bearer ${token}` : '',
-      'Content-Type': 'application/json'
-    });
+    let headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    headers['Content-Type'] = 'application/json';
+    return new HttpHeaders(headers);
   }
 
   private fullUrl(url: string): string {

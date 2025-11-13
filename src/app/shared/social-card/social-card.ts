@@ -11,7 +11,8 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-social-card',
     standalone: true,
     imports: [CommonModule, FormsModule, NgbPaginationModule, RouterModule, CarouselModule, NgbDropdownModule],
-    templateUrl: './social-card.html'
+    templateUrl: './social-card.html',
+    styleUrls: ['./social-card.scss']
 })
 export class SocialCard implements OnInit, AfterViewInit {
     facebookShareUrl = '';
@@ -199,9 +200,9 @@ export class SocialCard implements OnInit, AfterViewInit {
         this.api.post('/posts/comments/', {
             referenceId: blog.id,
             relatedTo: 'post',
-            comment: this.newComment
+            message: this.newComment
         }).subscribe(() => {
-            this.commentsMap[blog.id] = [...(this.commentsMap[blog.id] || []), { comment: this.newComment }];
+            this.commentsMap[blog.id] = [...(this.commentsMap[blog.id] || []), { message: this.newComment }];
             this.isSubmittingComment = false;
             this.closeCommentModal();
         }, () => {

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - farmeets
 
 jobs:
   build-and-deploy:
@@ -53,15 +52,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
-            if [ "${{ github.ref_name }}" = "farmeets" ]; then
-              IMAGE=ghcr.io/${{ github.repository_owner }}/farmeets:latest
-              CONTAINER_NAME=farmeets
-              PORT=4001
-            else
-              IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
-              CONTAINER_NAME=${{ github.event.repository.name }}
-              PORT=4000
-            fi
+            IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+            CONTAINER_NAME=${{ github.event.repository.name }}
+            PORT=4001
 
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull $IMAGE

@@ -20,12 +20,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       const user = this.userIdentity.userDetails;
       // Check for missing language or categories
       console.log(user, user?.language, user?.categories);  
-      if (!user?.language || !user?.categories || user.categories.length === 0) {
+      /* if (!user?.language || !user?.categories || user.categories.length === 0) {
         if (next.routeConfig?.path !== 'auth/update-preference') {
           this.router.navigate(['/auth/update-preference']);
           return false;
         }
-      }
+      } */
       if (next.routeConfig?.path?.includes('auth')) {
         this.router.navigate(['/']);
         return false;
@@ -46,12 +46,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       const user = this.userIdentity.userDetails;
       // Check for missing language or categories
       console.log(user, user?.language, user?.categories);
-      if (!user?.language || !user?.categories || user.categories.length === 0) {
+      /* if (!user?.language || !user?.categories || user.categories.length === 0) {
         if (childRoute.routeConfig?.path !== 'auth/update-preference') {
           this.router.navigate(['/auth/update-preference']);
           return false;
         }
-      }
+      } */
       if (childRoute.routeConfig?.path?.includes('auth')) {
         this.router.navigate(['/']);
         return false;

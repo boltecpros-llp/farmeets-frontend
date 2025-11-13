@@ -1,0 +1,63 @@
+/* ============================
+   Language Icons Grid Styles
+   ============================ */
+
+.lang-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.lang-item {
+  width: 90px;
+  text-align: center;
+  font-family: "Noto Sans", "Noto Sans Devanagari", "Noto Sans Gujarati",
+               "Noto Sans Bengali", "Noto Sans Tamil", "Noto Sans Telugu",
+               "Noto Sans Malayalam", "Noto Sans Kannada",
+               system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.lang-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lang-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.lang-text {
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 4px;
+  text-rendering: geometricPrecision;
+}
+
+.lang-label {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lang-item:hover {
+  cursor: pointer;
+}

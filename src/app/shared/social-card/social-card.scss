@@ -1,12 +1,15 @@
 // Copy of blog-listing.scss. Adjust styles for social-card if needed.
-@import '../blog-listing/blog-listing.scss';
+
+:host {
+  --header-height: 85px;
+  --bottom-nav-height: 0px;
+}
 
 .social-card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100vw;
   min-height: 100vh;
 }
 
@@ -19,6 +22,12 @@
 
 .post-header {
   z-index: 99;
+
+  .profile-image-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
 }
 
 .above-all {
@@ -26,6 +35,7 @@
 }
 
 .post-media {
+
   .post-img,
   .post-video {
     width: 100%;
@@ -36,40 +46,19 @@
 
 .post-actions {
   right: 12px;
-  bottom: 12px;
+  bottom: 18vh;
   z-index: 99;
+
   .btn {
-    color: #fff;
-    text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8);
+    color: #ffffff !important;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.9);
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
   }
+
   .btn:hover {
     transform: scale(1.2);
   }
-}
-
-.clamp-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  &.expanded {
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
-  }
-}
-
-.clamp-text.clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .extra-content {
@@ -85,16 +74,18 @@
 .caption.expandable {
   cursor: pointer;
 }
+
 .caption.expandable .extra-content {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 6em;
   transition: max-height 0.3s;
 }
+
 .caption.expandable.expanded .extra-content {
   display: block;
   max-height: 50vh;
@@ -106,6 +97,7 @@
 .caption.expandable.expanded::after {
   content: ' (less)';
 }
+
 .caption.expandable::after {
   content: '...';
   cursor: pointer;
@@ -126,16 +118,55 @@
 }
 
 // Gradient backgrounds for post graphic text
-.style-1 { background: linear-gradient(135deg, #2bb3a6 0%, #2573a6 50%, #1a3a5d 100%); color: #fff; }
-.style-2 { background: linear-gradient(135deg, #b86d09 0%, #f7971e 50%, #ddb706 100%); color: #fff; }
-.style-3 { background: linear-gradient(135deg, #43e97b 0%, #19695b 50%, #2e7d5b 100%); color: #fff; }
-.style-4 { background: linear-gradient(135deg, #fa709a 0%, #5e5000 50%, #b03a5b 100%); color: #fff; }
-.style-5 { background: linear-gradient(135deg, #30cfd0 0%, #330867 50%, #1a3a5d 100%); color: #fff; }
-.style-6 { background: linear-gradient(135deg, #193c5e 0%, #0767b3 50%, #0d47a1 100%); color: #fff; }
-.style-7 { background: linear-gradient(135deg, #388e3c 0%, #004703 50%, #00695c 100%); color: #fff; }
-.style-8 { background: linear-gradient(135deg, #8e24aa 0%, #bf27d9 50%, #4a148c 100%); color: #fff; }
-.style-9 { background: linear-gradient(135deg, #ff512f 0%, #dd2476 50%, #ff512f 100%); color: #fff; }
-.style-10 { background: linear-gradient(135deg, #11998e 0%, #099a40 50%, #11998e 100%); color: #fff; }
+.style-1 {
+  background: linear-gradient(135deg, #2bb3a6 0%, #2573a6 50%, #1a3a5d 100%);
+  color: #fff;
+}
+
+.style-2 {
+  background: linear-gradient(135deg, #b86d09 0%, #f7971e 50%, #ddb706 100%);
+  color: #fff;
+}
+
+.style-3 {
+  background: linear-gradient(135deg, #43e97b 0%, #19695b 50%, #2e7d5b 100%);
+  color: #fff;
+}
+
+.style-4 {
+  background: linear-gradient(135deg, #fa709a 0%, #5e5000 50%, #b03a5b 100%);
+  color: #fff;
+}
+
+.style-5 {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 50%, #1a3a5d 100%);
+  color: #fff;
+}
+
+.style-6 {
+  background: linear-gradient(135deg, #193c5e 0%, #0767b3 50%, #0d47a1 100%);
+  color: #fff;
+}
+
+.style-7 {
+  background: linear-gradient(135deg, #388e3c 0%, #004703 50%, #00695c 100%);
+  color: #fff;
+}
+
+.style-8 {
+  background: linear-gradient(135deg, #8e24aa 0%, #bf27d9 50%, #4a148c 100%);
+  color: #fff;
+}
+
+.style-9 {
+  background: linear-gradient(135deg, #ff512f 0%, #dd2476 50%, #ff512f 100%);
+  color: #fff;
+}
+
+.style-10 {
+  background: linear-gradient(135deg, #11998e 0%, #099a40 50%, #11998e 100%);
+  color: #fff;
+}
 
 .post-graphic-text {
   width: 100%;
@@ -148,4 +179,50 @@
   font-weight: 700;
   line-height: 1.1;
   word-break: break-word;
+}
+
+.social-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.social-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.social-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.social-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.social-card-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.social-card-content {
+  font-size: 0.98rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.social-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.92rem;
+  color: #888;
 }

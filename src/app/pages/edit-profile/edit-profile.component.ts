@@ -54,7 +54,7 @@ export class EditProfileComponent implements OnInit {
   uploadMedia(file: File) {
     const formData = new FormData();
     formData.append('files', file);
-    const apiPath = 'https://api.atlasbyargoatlantic.com/api/posts/uploads/';
+    const apiPath = this.api.baseUrl + '/posts/uploads/';
     const token = localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
     return this.http.post<any>(apiPath, formData, {

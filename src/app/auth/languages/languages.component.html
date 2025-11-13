@@ -1,0 +1,14 @@
+<div class="lang-grid">
+  <div class="lang-item" *ngFor="let lang of languages">
+    <div
+      class="lang-icon"
+      role="img"
+      [attr.aria-label]="lang.name"
+      [style.backgroundColor]="getColor(lang.code)"
+      [title]="lang.name"
+    >
+      <span class="lang-text">{{ lang.name }}</span>
+    </div>
+    <div class="lang-label">{{ lang.name }}</div>
+  </div>
+</div>

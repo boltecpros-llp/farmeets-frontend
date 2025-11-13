@@ -1,47 +1,38 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-secondary fixed-top shadow">
+<nav class="navbar navbar-expand-lg bg-light sticky-top shadow">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" routerLink="/">
-            <img src="Argo-Atlantic-logo.png" alt="Atlas Logo" height="50" class="me-2" />
-            <span class="d-flex flex-column lh-1">
-                <span style="font-size:1.25rem; font-weight:700; line-height:1.2;">Atlas</span>
-                <span style="font-size:0.85rem; color:#ced4da; line-height:1;">by Argo Atlantic</span>
-            </span>
+        <a class="navbar-brand p-0 d-flex align-items-center" routerLink="/">
+            <img src="farmeets-logo.png" alt="Farmeets Logo" height="60" class="me-2" />
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <ng-container *ngIf="(userIdentity.isLoggedIn | async) as loggedIn">
-                    <li class="nav-item" *ngIf="loggedIn && !isDashboardRoute">
-                        <a class="nav-link" routerLink="/dashboard">Dashboard</a>
-                    </li>
-                </ng-container>
-                <ng-container *ngIf="userIdentity.isLoggedIn | async; else loginLinks">
-                    <li class="nav-item" ngbDropdown>
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" ngbDropdownToggle id="profileDropdown" role="button">
-                            <span class="me-2"><i class="bi bi-person-circle"></i></span>
-                            <span>{{ userIdentity.userDetails?.name || 'Profile' }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" ngbDropdownMenu aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" routerLink="/edit-profile">Edit Profile</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;" >Logout</a></li>
-                        </ul>
-                    </li>
-                </ng-container>
-                <ng-template #loginLinks>
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/auth/login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/auth/register">Signup</a>
-                    </li>
-                </ng-template>
-            </ul>
-        </div>
+        <ul class="navbar-nav ms-auto d-flex flex-row gap-2 align-items-center w-auto">
+            <ng-container *ngIf="(userIdentity.isLoggedIn | async) as loggedIn">
+                <li class="nav-item" *ngIf="loggedIn && !isDashboardRoute">
+                    <a class="nav-link" routerLink="/">Home</a>
+                </li>
+            </ng-container>
+            <ng-container *ngIf="userIdentity.isLoggedIn | async; else loginLinks">
+                <li class="nav-item position-relative" ngbDropdown>
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" ngbDropdownToggle id="profileDropdown"
+                        role="button">
+                        <span class="me-2">
+                            <i class="bi bi-person-circle"></i>
+                            <!-- If you have profile image, use <img> here -->
+                        </span>
+                        <span class="d-none d-lg-inline">{{ userIdentity.userDetails?.name || 'Profile' }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end position-absolute" ngbDropdownMenu aria-labelledby="profileDropdown" style="top:100%;left:auto;right:0;">
+                        <li><a class="dropdown-item" routerLink="/edit-profile">Edit Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Logout</a></li>
+                    </ul>
+                </li>
+            </ng-container>
+            <ng-template #loginLinks>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/auth/quick-signon">Login</a>
+                </li>
+            </ng-template>
+        </ul>
     </div>
 </nav>

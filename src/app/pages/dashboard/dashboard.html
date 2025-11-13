@@ -1,11 +1,11 @@
-<div class="container mt-8">
-    <div class="row g-3">
+<div class="container">
+    <div class="row g-3 pt-3 align-items-start">
 
-        <div class="col-md-3 d-none d-md-block sidebar">
+        <div class="col-md-3 d-none d-md-block sidebar sticky-top" style="top: 84px;">
             <app-sidebar (groupSelected)="onGroupSelected($event)"></app-sidebar>
         </div>
 
-        <div class="col-md-9 ms-sm-auto px-4 py-4">
+        <div class="col-md-9 ms-sm-auto">
             <router-outlet></router-outlet>
         </div>
     </div>

@@ -19,6 +19,36 @@ import { HttpEventType, HttpEvent, HttpClient } from '@angular/common/http';
     styleUrls: ['./create-post.component.scss']
 })
 export class CreatePostComponent {
+        public LANGUAGE_MAP: { [code: string]: string } = {
+            en: "English",
+            bn: "বাংলা",
+            gu: "ગુજરાતી",
+            mr: "मराठी",
+            hi: "हिंदी",
+            kn: "ಕನ್ನಡ",
+            ml: "മലയാളം",
+            or: "ଓଡ଼ିଆ",
+            pa: "ਪੰਜਾਬੀ",
+            ta: "தமிழ்",
+            te: "తెలుగు"
+        };
+        colorMap: { [code: string]: string } = {
+            en: '#2B6CB0',
+            bn: '#E53E3E',
+            gu: '#DD6B20',
+            mr: '#6B46C1',
+            hi: '#C53030',
+            kn: '#2F855A',
+            ml: '#319795',
+            or: '#D69E2E',
+            pa: '#D53F8C',
+            ta: '#B7791F',
+            te: '#3182CE'
+        };
+
+        getColor(code: string): string {
+            return this.colorMap[code] || '#777';
+        }
     isCategorySelected(id: string): boolean {
         return this.selectedCategories.some(c => c.id === id);
     }
@@ -49,7 +79,7 @@ export class CreatePostComponent {
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
+        public router: Router,
         private route: ActivatedRoute,
         private api: ApiHelperService,
         private http: HttpClient
