@@ -21,8 +21,8 @@ export const routes: Routes = [
     {
         path: '',
         component: Dashboard,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard],
+        // canActivate: [AuthGuard],
+        // canActivateChild: [AuthGuard],
         children: [
             { path: '', component: SocialCard },
             { path: 'blog/:blogId/:blogTitle', component: BlogDetails },
