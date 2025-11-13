@@ -73,17 +73,17 @@
           <!-- Actions -->
           <div class="post-actions position-absolute d-flex flex-column gap-2 align-items-start">
             <button class="btn btn-link p-0 text-white text-decoration-none"
-              [class.active]="likeDislikeMap[blog.id] === true" (click)="onLikeDislike(blog, true)">
-              <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="likeDislikeMap[blog.id] === true"></i> {{
-              likeCountMap[blog.id] || blog.likes || 0 }}
+              [class.active]="blog.likeDislike === true" (click)="onLikeDislike(blog, true)">
+              <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="blog.likeDislike === true"></i> {{
+              likeCountMap[blog.id] || blog.likes_count || 0 }}
             </button>
             <button class="btn btn-link p-0 text-white text-decoration-none"
-              [class.active]="likeDislikeMap[blog.id] === false" (click)="onLikeDislike(blog, false)">
-              <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="likeDislikeMap[blog.id] === false"></i> {{
-              dislikeCountMap[blog.id] || blog.dislikes || 0 }}
+              [class.active]="blog.likeDislike === false" (click)="onLikeDislike(blog, false)">
+              <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="blog.likeDislike === false"></i> {{
+              dislikeCountMap[blog.id] || blog.dislikes_count || 0 }}
             </button>
             <button class="btn btn-link p-0 text-white text-decoration-none" (click)="openCommentModal(blog)">
-              <i class="bi bi-chat-left-text me-1"></i> {{ (commentsMap[blog.id]?.length || blog.comments || 0) }}
+              <i class="bi bi-chat-left-text me-1"></i> {{ (commentsMap[blog.id]?.length || blog.comments_count || 0) }}
             </button>
             <div ngbDropdown placement="auto">
               <button ngbDropdownToggle class="btn btn-link p-0 text-white text-decoration-none">

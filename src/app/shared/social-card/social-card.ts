@@ -100,11 +100,28 @@ export class SocialCard implements OnInit, AfterViewInit {
                 setTimeout(() => {
                     this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
                 }, 100);
+
+                this.blogs.forEach((blog: any) => {
+                    this.likeDislikeMap[blog.id] = blog.likeDislike;
+                    this.likeCountMap[blog.id] = blog.likes_count || 0;
+                    this.dislikeCountMap[blog.id] = blog.dislikes_count || 0;
+                    this.commentsMap[blog.id] = blog.comments || [];
+                });
+
             },
             error: () => {
                 if (reset) {
                     this.blogs = [];
                 }
+                setTimeout(() => {
+                    this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
+                }, 100);
+
+                this.likeDislikeMap = {};
+                this.likeCountMap = {};
+                this.dislikeCountMap = {};
+                this.commentsMap = {};
+
             }
         });
     }
