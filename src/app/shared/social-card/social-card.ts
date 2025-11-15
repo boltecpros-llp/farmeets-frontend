@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Renderer2, HostListener, ViewChildren, ElementRef, AfterViewInit, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
@@ -7,6 +7,7 @@ import { ApiHelperService } from '../api-helper.service';
 import { combineLatest } from 'rxjs';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
     selector: 'app-social-card',
     standalone: true,
@@ -15,6 +16,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./social-card.scss']
 })
 export class SocialCard implements OnInit, AfterViewInit {
+    @ViewChildren('postGraphicText') postGraphicTextRefs!: QueryList<ElementRef>;
     facebookShareUrl = '';
     linkedinShareUrl = '';
     whatsappShareUrl = '';
@@ -76,6 +78,65 @@ export class SocialCard implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
+        setTimeout(() => {
+            this.applyGraphicTextFontSizes();
+        }, 0);
+    }
+
+    ngOnChanges() {
+        setTimeout(() => {
+            this.applyGraphicTextFontSizes();
+        }, 0);
+    }
+
+    applyGraphicTextFontSizes() {
+        if (this.postGraphicTextRefs && this.postGraphicTextRefs.length > 0) {
+            this.postGraphicTextRefs.forEach(ref => {
+                this.adjustPostGraphicTextFontSize(ref);
+            });
+        }
+    }
+
+    /**
+     * Dynamically gets the width, height, and text content of the .post-graphic-text element,
+     * calculates an appropriate font size to fit the text, and applies it.
+     * Returns { width, height, text, fontSize } or null if not found
+     */
+    adjustPostGraphicTextFontSize(ref: ElementRef): { width: number, height: number, text: string, fontSize: number } | null {
+        if (ref && ref.nativeElement) {
+            const el = ref.nativeElement as HTMLElement;
+            const rect = el.getBoundingClientRect();
+            const text = el.textContent?.trim() || '';
+            const minFontSize = 16;
+            const maxFontSize = 48;
+            const k = 1.2;
+            const textLength = Math.max(text.length, 1);
+            let fontSize = k * Math.sqrt((rect.width * rect.height) / textLength);
+            fontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize));
+            this.renderer.setStyle(el, 'font-size', fontSize + 'px');
+            this.renderer.setStyle(el, 'display', 'flex');
+            this.renderer.setStyle(el, 'align-items', 'center');
+            this.renderer.setStyle(el, 'justify-content', 'center');
+            this.renderer.setStyle(el, 'text-align', 'center');
+            this.renderer.setStyle(el, 'overflow-y', '');
+            this.renderer.setStyle(el, 'max-height', '');
+            setTimeout(() => {
+                if (fontSize === minFontSize && el.scrollHeight > el.offsetHeight) {
+                    this.renderer.setStyle(el, 'overflow-y', 'auto');
+                    this.renderer.setStyle(el, 'max-height', rect.height + 'px');
+                } else {
+                    this.renderer.setStyle(el, 'overflow-y', '');
+                    this.renderer.setStyle(el, 'max-height', '');
+                }
+            }, 0);
+            return {
+                width: rect.width,
+                height: rect.height,
+                text,
+                fontSize
+            };
+        }
+        return null;
     }
 
     fetchBlogs(reset: boolean = false) {

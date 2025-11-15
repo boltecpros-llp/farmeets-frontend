@@ -3,10 +3,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { EditorComponent, EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
+import { Router } from '@angular/router';
+import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { ApiHelperService } from '../../shared/api-helper.service';
-import { HttpEventType, HttpEvent, HttpClient } from '@angular/common/http';
+import { HttpEventType, HttpClient } from '@angular/common/http';
+import { UserIdentityService } from '../../shared/user-identity.service';
+import { franc } from 'franc';
 
 @Component({
     selector: 'app-create-post',
@@ -19,46 +21,20 @@ import { HttpEventType, HttpEvent, HttpClient } from '@angular/common/http';
     styleUrls: ['./create-post.component.scss']
 })
 export class CreatePostComponent {
-        public LANGUAGE_MAP: { [code: string]: string } = {
-            en: "English",
-            bn: "বাংলা",
-            gu: "ગુજરાતી",
-            mr: "मराठी",
-            hi: "हिंदी",
-            kn: "ಕನ್ನಡ",
-            ml: "മലയാളം",
-            or: "ଓଡ଼ିଆ",
-            pa: "ਪੰਜਾਬੀ",
-            ta: "தமிழ்",
-            te: "తెలుగు"
-        };
-        colorMap: { [code: string]: string } = {
-            en: '#2B6CB0',
-            bn: '#E53E3E',
-            gu: '#DD6B20',
-            mr: '#6B46C1',
-            hi: '#C53030',
-            kn: '#2F855A',
-            ml: '#319795',
-            or: '#D69E2E',
-            pa: '#D53F8C',
-            ta: '#B7791F',
-            te: '#3182CE'
-        };
-
-        getColor(code: string): string {
-            return this.colorMap[code] || '#777';
+        onCategoryToggle(catId: string, event: Event) {
+            const checked = (event.target as HTMLInputElement).checked;
+            const current = this.form.get('categories')?.value as string[];
+            let updated: string[];
+            if (checked) {
+                updated = [...current, catId];
+            } else {
+                updated = current.filter(id => id !== catId);
+            }
+            this.form.get('categories')?.setValue(updated);
+            this.form.get('categories')?.markAsTouched();
         }
-    isCategorySelected(id: string): boolean {
-        return this.selectedCategories.some(c => c.id === id);
-    }
-    step = 1;
-    selectedLanguage: any = null;
     categories: any[] = [];
-    loadingCategories = false;
-    selectedCategories: any[] = [];
     languages: any[] = [];
-    loadingLanguages = false;
     form: FormGroup;
     imagePreviews: string[] = [];
     videoPreviews: string[] = [];
@@ -66,7 +42,6 @@ export class CreatePostComponent {
     uploadingVideos = false;
     imageUploadProgress: number = 0;
     videoUploadProgress: number = 0;
-
     tinymceConfig: any = {
         height: 300,
         menubar: false,
@@ -75,134 +50,108 @@ export class CreatePostComponent {
         statusbar: false
     };
 
-    categoryId: string | null = null;
-
     constructor(
         private fb: FormBuilder,
         public router: Router,
-        private route: ActivatedRoute,
         private api: ApiHelperService,
-        private http: HttpClient
+        private http: HttpClient,
+        private userIdentity: UserIdentityService
     ) {
         this.form = this.fb.group({
-            title: ['', Validators.required],
             description: ['', Validators.required],
-            categories: [[]],
+            categories: [[], Validators.required],
             images: [[]],
             videos: [[]],
             hideAuthor: [false],
-            language: ['']
+            language: ['en']
         });
-        // Set categoryId from route params if present
-        this.route.paramMap.subscribe(params => {
-            this.categoryId = params.get('categoryId');
-            if (this.categoryId && this.categoryId !== 'general') {
-                this.form.patchValue({ categories: [this.categoryId] });
+        // Load categories from user details
+        const userDetails = this.userIdentity.userDetails;
+        this.categories = Array.isArray(userDetails?.categories) ? userDetails.categories : [];
+        this.languages = Array.isArray(userDetails?.languages) ? userDetails.languages : [];
+        console.log(this.categories);
+
+        // Subscribe to description changes for language detection
+        this.descriptionControl.valueChanges.subscribe((text: string) => {
+            const lang = this.detectLanguage(text);
+            if (lang !== this.form.get('language')?.value) {
+                this.form.patchValue({ language: lang });
             }
         });
     }
 
-    ngOnInit() {
-        this.loadingLanguages = true;
-        this.api.get('/posts/languages/').subscribe({
-            next: (res: any) => {
-                this.languages = Array.isArray(res) ? res : (res?.results || []);
-                this.loadingLanguages = false;
-            },
-            error: () => {
-                this.loadingLanguages = false;
-            }
-        });
+    detectLanguage(text: string): string {
+        if (!text) return 'en';
+        const isoToIndianCode: { [iso: string]: string } = {
+            'eng': 'en', 'hin': 'hi', 'mar': 'mr', 'guj': 'gu', 'tam': 'ta', 'tel': 'te', 'kan': 'kn', 'mal': 'ml',
+            'pan': 'pa', 'ben': 'bn', 'ori': 'or', 'asm': 'as', 'urd': 'ur', 'snd': 'sd', 'kas': 'ks', 'san': 'sa',
+            'bho': 'bho', 'nep': 'ne', 'doi': 'doi', 'sat': 'san', 'kok': 'kok'
+        };
+        const iso = franc(text);
+        let lang = isoToIndianCode[iso] || 'en';
+        return lang;
     }
 
-    selectLanguage(lang: any) {
-        this.selectedLanguage = lang;
-        this.form.patchValue({ language: lang.id });
-        this.step = 2;
-        this.fetchCategories(lang.isoCode);
-        console.log(this.form.value)
-    }
+    // onEditorChange removed; handled by valueChanges subscription
 
-    fetchCategories(languageCode: string) {
-        this.loadingCategories = true;
-        this.api.get('/posts/categories/hierarchy/').subscribe({
-            next: (res: any) => {
-                this.categories = Array.isArray(res) ? res : (res?.results || []);
-                this.loadingCategories = false;
-            },
-            error: () => {
-                this.loadingCategories = false;
-            }
-        });
-    }
-
-    selectCategory(category: any) {
-        const idx = this.selectedCategories.findIndex((c) => c.id === category.id);
-        if (idx === -1) {
-            this.selectedCategories.push(category);
-        } else {
-            this.selectedCategories.splice(idx, 1);
-        }
-        const ids = this.selectedCategories.map((c) => c.id);
-        this.form.patchValue({ categories: ids });
-        console.log(this.form.value)
-    }
-
-    onLanguageChange(event: Event) {
-        const select = event.target as HTMLSelectElement;
-        this.form.patchValue({ language: select.value });
-    }
-
-    onImageChange(event: any) {
+    onMediaChange(event: any) {
         const files: FileList = event.target.files;
         if (!files || files.length === 0) return;
-        this.uploadingImages = true;
-        this.imageUploadProgress = 0;
-        this.uploadMedia(Array.from(files), 'posts/images', 'images').subscribe({
-            next: (event: any) => {
-                if (event.progress !== undefined) {
-                    this.imageUploadProgress = event.progress;
-                }
-                if (event.type === HttpEventType.Response) {
-                    const uploaded = event.body || [];
-                    const urls = Array.isArray(uploaded) ? uploaded.map((f: any) => f.file_url) : [];
-                    this.form.patchValue({ images: urls });
-                    this.imagePreviews = urls;
+        const imageFiles: File[] = [];
+        const videoFiles: File[] = [];
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                imageFiles.push(file);
+            } else if (file.type.startsWith('video/')) {
+                videoFiles.push(file);
+            }
+        });
+        if (imageFiles.length > 0) {
+            this.uploadingImages = true;
+            this.imageUploadProgress = 0;
+            this.uploadMedia(imageFiles, 'posts/images', 'images').subscribe({
+                next: (event: any) => {
+                    if (event.progress !== undefined) {
+                        this.imageUploadProgress = event.progress;
+                    }
+                    if (event.type === HttpEventType.Response) {
+                        const uploaded = event.body || [];
+                        const urls = Array.isArray(uploaded) ? uploaded.map((f: any) => f.file_url) : [];
+                        this.form.patchValue({ images: urls });
+                        this.imagePreviews = urls;
+                        this.uploadingImages = false;
+                        this.imageUploadProgress = 100;
+                    }
+                },
+                error: () => {
                     this.uploadingImages = false;
-                    this.imageUploadProgress = 100;
+                    this.imageUploadProgress = 0;
                 }
-            },
-            error: () => {
-                this.uploadingImages = false;
-                this.imageUploadProgress = 0;
-            }
-        });
-    }
-
-    onVideoChange(event: any) {
-        const files: FileList = event.target.files;
-        if (!files || files.length === 0) return;
-        this.uploadingVideos = true;
-        this.videoUploadProgress = 0;
-        this.uploadMedia(Array.from(files), 'posts/videos', 'videos').subscribe({
-            next: (event: any) => {
-                if (event.progress !== undefined) {
-                    this.videoUploadProgress = event.progress;
-                }
-                if (event.type === HttpEventType.Response) {
-                    const uploaded = event.body || [];
-                    const urls = Array.isArray(uploaded) ? uploaded.map((f: any) => f.file_url) : [];
-                    this.form.patchValue({ videos: urls });
-                    this.videoPreviews = urls;
+            });
+        }
+        if (videoFiles.length > 0) {
+            this.uploadingVideos = true;
+            this.videoUploadProgress = 0;
+            this.uploadMedia(videoFiles, 'posts/videos', 'videos').subscribe({
+                next: (event: any) => {
+                    if (event.progress !== undefined) {
+                        this.videoUploadProgress = event.progress;
+                    }
+                    if (event.type === HttpEventType.Response) {
+                        const uploaded = event.body || [];
+                        const urls = Array.isArray(uploaded) ? uploaded.map((f: any) => f.file_url) : [];
+                        this.form.patchValue({ videos: urls });
+                        this.videoPreviews = urls;
+                        this.uploadingVideos = false;
+                        this.videoUploadProgress = 100;
+                    }
+                },
+                error: () => {
                     this.uploadingVideos = false;
-                    this.videoUploadProgress = 100;
+                    this.videoUploadProgress = 0;
                 }
-            },
-            error: () => {
-                this.uploadingVideos = false;
-                this.videoUploadProgress = 0;
-            }
-        });
+            });
+        }
     }
 
     uploadMedia(fileOrFiles: File | File[], folderName?: string, urlType?: string, fileUploadOptions?: any) {
@@ -235,9 +184,15 @@ export class CreatePostComponent {
     }
 
     onSubmit() {
-        console.log(this.form.value)
+        // Convert language isoCode to id before submit
+        const formValue = { ...this.form.value };
+        const selectedLang = this.languages.find(lang => lang.isoCode === formValue.language);
+        if (selectedLang) {
+            formValue.language = selectedLang.id;
+        }
+        console.log(formValue);
         if (this.form.valid) {
-            this.api.post('/posts/posts/', this.form.value).subscribe({
+            this.api.post('/posts/posts/', formValue).subscribe({
                 next: (res) => {
                     this.api.errorPopup.show('Post created!');
                     console.log(res);

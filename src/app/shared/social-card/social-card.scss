@@ -1,3 +1,58 @@
+// Gradient backgrounds for post graphic text (1-10)
+.style-1 {
+  background: linear-gradient(135deg, #2bb3a6 0%, #2573a6 50%, #1a3a5d 100%);
+  color: #fff;
+}
+.style-2 {
+  background: linear-gradient(135deg, #b86d09 0%, #f7971e 50%, #ddb706 100%);
+  color: #fff;
+}
+.style-3 {
+  background: linear-gradient(135deg, #43e97b 0%, #19695b 50%, #2e7d5b 100%);
+  color: #fff;
+}
+.style-4 {
+  background: linear-gradient(135deg, #fa709a 0%, #5e5000 50%, #b03a5b 100%);
+  color: #fff;
+}
+.style-5 {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 50%, #1a3a5d 100%);
+  color: #fff;
+}
+.style-6 {
+  background: linear-gradient(135deg, #193c5e 0%, #0767b3 50%, #0d47a1 100%);
+  color: #fff;
+}
+.style-7 {
+  background: linear-gradient(135deg, #388e3c 0%, #004703 50%, #00695c 100%);
+  color: #fff;
+}
+.style-8 {
+  background: linear-gradient(135deg, #8e24aa 0%, #bf27d9 50%, #4a148c 100%);
+  color: #fff;
+}
+.style-9 {
+  background: linear-gradient(135deg, #ff512f 0%, #dd2476 50%, #ff512f 100%);
+  color: #fff;
+}
+.style-10 {
+  background: linear-gradient(135deg, #11998e 0%, #099a40 50%, #11998e 100%);
+  color: #fff;
+}
+
+.post-graphic-text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
+  font-weight: 700;
+  line-height: 1.1;
+  word-break: break-word;
+  font-size: clamp(1.2rem, 4vw, 2.5rem);
+}
 // Copy of blog-listing.scss. Adjust styles for social-card if needed.
 
 :host {

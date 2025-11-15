@@ -1,135 +1,56 @@
 <div class="container py-2" style="max-width:480px;">
-  <!-- Step 1: Language Selection -->
-  <div *ngIf="step === 1" class="stepper-step animate__animated animate__fadeIn">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h4 class="mb-3 flex-grow-1 text-center">Select Language</h4>
-      <button class="btn btn-primary" [disabled]="!selectedLanguage" (click)="step = 2">Next</button>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+      <editor id="description" [init]="tinymceConfig" licenseKey="gpl" [formControl]="descriptionControl"></editor>
+      <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-danger small">Description is required.</div>
     </div>
-    <div class="row g-2">
-      <div class="col-6 col-sm-4" *ngFor="let lang of languages">
-        <div class="card text-center p-2" (click)="selectLanguage(lang)"
-          [class.border-success]="selectedLanguage?.id === lang.id" [class.bg-success-subtle]="selectedLanguage?.id === lang.id"
-          style="cursor:pointer;">
-          <div class="ratio ratio-1x1 d-flex align-items-center justify-content-center"
-            [style.backgroundColor]="getColor(lang.isoCode)">
-            <span class="fs-1 w-100 h-100 d-flex align-items-center justify-content-center lang-text">
-              <i *ngIf="lang.icon" [class]="lang.icon + ' me-1'"></i>
-              {{ LANGUAGE_MAP[lang.isoCode] || lang.name }}
-            </span>
-          </div>
-          <div class="mt-2 fw-bold lang-label">{{ lang.name }}</div>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="loadingLanguages" class="small text-muted text-center mt-3">Loading languages...</div>
-    <div class="d-flex justify-content-between">
-      <button class="btn btn-primary ms-auto mt-3" [disabled]="!selectedLanguage" (click)="step = 2">Next</button>
-    </div>
-  </div>
 
-  <!-- Step 2: Category Selection -->
-  <div *ngIf="step === 2" class="stepper-step animate__animated animate__fadeIn">
-    <div class="d-flex align-items-center mb-2">
-      <h4 class="mb-3 flex-grow-1">Select Category</h4>
-      <button class="ms-auto btn btn-primary" [disabled]="!form.value.categories || form.value.categories.length === 0"
-        (click)="step = 3">Next</button>
-    </div>
-    <div *ngIf="loadingCategories" class="small text-muted text-center">Loading categories...</div>
-    <div class="row g-2">
-      <div class="col-12" *ngFor="let cat of categories">
-        <div class="card p-2 mb-2" style="cursor:pointer;">
-          <div class="d-flex align-items-center start">
-            <div class="w-25 ratio ratio-4x3 me-2">
-              <img [src]="cat.images && cat.images[0] || cat.image" alt="Category" class="object-fit-cover">
-            </div>
-            <div class="fw-bold clamp-2">
-              <i *ngIf="cat.icon" [class]="cat.icon + ' me-1'"></i>
-              {{ cat.names[selectedLanguage?.isoCode] || cat.names['en'] }}
-            </div>
-          </div>
-          <div *ngIf="cat.children?.length" class="mt-2 ms-4">
-            <div class="row g-1">
-              <div class="col-6" *ngFor="let sub of cat.children">
-                <div class="card p-1 d-flex flex-row align-items-center"
-                  (click)="$event.stopPropagation(); selectCategory(sub)"
-                  [class.border-success]="isCategorySelected(sub.id)"
-                  [class.bg-success-subtle]="isCategorySelected(sub.id)" style="cursor:pointer;">
-                  <div class="w-25 ratio ratio-4x3 me-2">
-                    <img [src]="sub.images && sub.images[0] || sub.image" alt="Sub Category" class="object-fit-cover">
-                  </div>
-                  <div class="clamp-2">
-                    <i *ngIf="sub.icon" [class]="sub.icon + ' me-1'"></i>
-                    {{ sub.names[selectedLanguage?.isoCode] || sub.names['en'] }}
-                  </div>
-                </div>
-              </div>
+    <div class="row mb-3">
+      <div class="col-6">
+        <label for="language" class="form-label">Language <span class="text-danger">*</span></label>
+        <select id="language" class="form-select" formControlName="language" required>
+          <option value="" disabled>Select language</option>
+          <option *ngFor="let lang of languages" [value]="lang.isoCode">{{ lang.name }}</option>
+        </select>
+        <div *ngIf="form.get('language')?.invalid && form.get('language')?.touched" class="text-danger small">Language is required.</div>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Categories <span class="text-danger">*</span></label>
+        <div class="row g-2">
+          <div class="col-auto" *ngFor="let cat of categories">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" [value]="cat.id" [checked]="form.get('categories')?.value?.includes(cat.id)" (change)="onCategoryToggle(cat.id, $event)" id="cat-{{cat.id}}">
+              <label class="form-check-label" [for]="'cat-' + cat.id">{{ cat.names[this.form.get('language')?.value || 'en'] }}</label>
             </div>
           </div>
         </div>
+        <div *ngIf="form.get('categories')?.invalid && form.get('categories')?.touched" class="text-danger small">At least one category is required.</div>
       </div>
     </div>
-    <div class="d-flex justify-content-end mt-3">
-      <button class="btn btn-primary" [disabled]="!form.value.categories || form.value.categories.length === 0"
-        (click)="step = 3">Next</button>
+
+    <div class="mb-3">
+      <label class="form-label">Media</label>
+      <input type="file" class="form-control" (change)="onMediaChange($event)" accept="image/*,video/*" multiple />
+      <div *ngIf="uploadingImages || uploadingVideos" class="progress my-2">
+        <div class="progress-bar" role="progressbar" [style.width]="(uploadingImages ? imageUploadProgress : videoUploadProgress) + '%'" [attr.aria-valuenow]="uploadingImages ? imageUploadProgress : videoUploadProgress" aria-valuemin="0" aria-valuemax="100">
+          {{uploadingImages ? imageUploadProgress : videoUploadProgress}}%
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-6 mb-2" *ngFor="let img of imagePreviews">
+          <div class="card">
+            <img [src]="img" class="card-img-top" style="object-fit:cover;max-height:120px;">
+          </div>
+        </div>
+        <div class="col-12 mb-2" *ngFor="let vid of videoPreviews">
+          <div class="card">
+            <video [src]="vid" controls class="w-100" style="max-height:120px;"></video>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Step 3: Post Form -->
-  <div *ngIf="step === 3" class="stepper-step animate__animated animate__fadeIn">
-    <h4 class="mb-3 text-center">Create Post</h4>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
-        <input id="title" type="text" class="form-control" name="title" formControlName="title" required />
-        <div *ngIf="form.get('title')?.invalid && form.get('title')?.touched" class="text-danger small">Title is
-          required.</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-        <editor id="description" [init]="tinymceConfig" licenseKey="gpl" [formControl]="descriptionControl"
-          (onEditorChange)="descriptionControl.setValue($event)"></editor>
-        <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-danger small">
-          Description is required.</div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Images</label>
-        <input type="file" class="form-control" (change)="onImageChange($event)" accept="image/*" multiple />
-        <div *ngIf="uploadingImages" class="progress my-2">
-          <div class="progress-bar" role="progressbar" [style.width]="imageUploadProgress + '%'"
-            [attr.aria-valuenow]="imageUploadProgress" aria-valuemin="0" aria-valuemax="100">
-            {{imageUploadProgress}}%
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-6 mb-2" *ngFor="let img of imagePreviews">
-            <div class="card">
-              <img [src]="img" class="card-img-top" style="object-fit:cover;max-height:120px;">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Videos</label>
-        <input type="file" class="form-control" (change)="onVideoChange($event)" accept="video/*" multiple />
-        <div *ngIf="uploadingVideos" class="progress my-2">
-          <div class="progress-bar" role="progressbar" [style.width]="videoUploadProgress + '%'"
-            [attr.aria-valuenow]="videoUploadProgress" aria-valuemin="0" aria-valuemax="100">
-            {{videoUploadProgress}}%
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-12 mb-2" *ngFor="let vid of videoPreviews">
-            <div class="card">
-              <video [src]="vid" controls class="w-100" style="max-height:120px;"></video>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary mt-3 w-100">Submit</button>
-    </form>
-  </div>
+    <button type="submit" class="btn btn-primary mt-3 w-100">Submit</button>
+  </form>
 </div>

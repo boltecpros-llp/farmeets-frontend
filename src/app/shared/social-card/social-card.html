@@ -21,11 +21,11 @@
             <div>
               <strong>
                 {{
-                  blog.author?.name
-                    || (blog.author?.firstName
-                        ? (blog.author?.firstName + (blog.author?.lastName ? ' ' + blog.author.lastName : ''))
-                        : null)
-                    || 'GUEST'
+                blog.author?.name
+                || (blog.author?.firstName
+                ? (blog.author?.firstName + (blog.author?.lastName ? ' ' + blog.author.lastName : ''))
+                : null)
+                || 'GUEST'
                 }}
               </strong>
               <span class="d-block small"><i class="bi bi-calendar me-1"></i> {{ blog.created_at | date }}</span>
@@ -54,31 +54,33 @@
               <img *ngIf="blog.images.length === 1" [src]="blog.images[0]" alt="{{blog.title}}"
                 class="w-100 h-100 object-fit-cover" />
             </ng-container>
-            <img *ngIf="!blog.images && blog.image" [src]="blog.image" alt="{{blog.title}}"
-              class="w-100 h-100 object-fit-cover" />
-            <div *ngIf="(!blog.images || blog.images.length === 0) && !blog.image"
-              class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary social-card-image-placeholder">
-              <i class="bi bi-image fs-1"></i>
-            </div>
+            <ng-container *ngIf="!blog.images?.length && !blog.image && !blog.videos?.length && !blog.video">
+              <div #postGraphicText [ngClass]="'post-graphic-text ' + (blog.textStyle ? blog.textStyle : 'style-1')"
+                style="height: calc(100% - 56px); min-height: 120px;">
+                {{ blog.description }}
+              </div>
+            </ng-container>
           </div>
           <!-- Caption -->
-          <div
-            class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
-            (click)="toggleCaption($event)">
-            <div class="extra-content">
-              <h5 class="m-1">{{ blog.title }}</h5>
-              <div class="m-0" [innerHTML]="blog.description"></div>
+          <ng-container *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video">
+            <div
+              class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
+              (click)="toggleCaption($event)">
+              <div class="extra-content">
+                <h5 class="m-1">{{ blog.title }}</h5>
+                <div class="m-0" [innerHTML]="blog.description"></div>
+              </div>
             </div>
-          </div>
+          </ng-container>
           <!-- Actions -->
           <div class="post-actions position-absolute d-flex flex-column gap-2 align-items-start">
-            <button class="btn btn-link p-0 text-white text-decoration-none"
-              [class.active]="blog.likeDislike === true" (click)="onLikeDislike(blog, true)">
+            <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === true"
+              (click)="onLikeDislike(blog, true)">
               <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="blog.likeDislike === true"></i> {{
               likeCountMap[blog.id] || blog.likes_count || 0 }}
             </button>
-            <button class="btn btn-link p-0 text-white text-decoration-none"
-              [class.active]="blog.likeDislike === false" (click)="onLikeDislike(blog, false)">
+            <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === false"
+              (click)="onLikeDislike(blog, false)">
               <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="blog.likeDislike === false"></i> {{
               dislikeCountMap[blog.id] || blog.dislikes_count || 0 }}
             </button>
