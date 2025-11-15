@@ -60,7 +60,7 @@ export class RegisterComponent {
             next: () => {
                 this.loading = false;
                 this.success = true;
-                this.router.navigate(['/auth/login']);
+                this.router.navigate(['/auth/quick-signon']);
             },
             error: (err) => {
                 this.loading = false;
@@ -71,7 +71,7 @@ export class RegisterComponent {
 
     startGoogleOAuth() {
         if (!this.googleClientId) return;
-        const redirectUri = encodeURIComponent(window.location.origin + '/auth/login');
+        const redirectUri = encodeURIComponent(window.location.origin + '/auth/quick-signon');
         const scope = encodeURIComponent('openid email profile');
         const state = encodeURIComponent(Math.random().toString(36).substring(2));
         const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&client_id=${this.googleClientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&nonce=${state}&prompt=select_account`;

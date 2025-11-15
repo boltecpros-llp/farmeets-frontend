@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,13 +13,18 @@ import { ApiHelperService } from '../../shared/api-helper.service';
   templateUrl: './quick-signon.component.html',
   styleUrls: ['./quick-signon.component.scss']
 })
-export class QuickSignonComponent {
+export class QuickSignonComponent implements OnDestroy {
   step = 1;
   form: FormGroup;
   profileForm: FormGroup;
   loading = false;
   otpSent = false;
   userDetails: any = null;
+  resendTimer: number = 0;
+  maxRetries: number = 3;
+  retryCount: number = 0;
+  resendBlocked: boolean = false;
+  timerInterval: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -35,6 +41,10 @@ export class QuickSignonComponent {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]]
     });
+    // Load retry count from sessionStorage
+    const storedRetry = sessionStorage.getItem('otpRetryCount');
+    this.retryCount = storedRetry ? +storedRetry : 0;
+    this.resendBlocked = this.retryCount >= this.maxRetries;
   }
 
   sendOtp(): void {
@@ -44,6 +54,11 @@ export class QuickSignonComponent {
       next: () => {
         this.otpSent = true;
         this.loading = false;
+        // Load retry count from sessionStorage
+        const storedRetry = sessionStorage.getItem('otpRetryCount');
+        this.retryCount = storedRetry ? +storedRetry : 0;
+        this.resendBlocked = this.retryCount >= this.maxRetries;
+        this.startResendTimer();
       },
       error: () => {
         this.loading = false;
@@ -67,6 +82,10 @@ export class QuickSignonComponent {
           this.checkPreferences();
         }
         this.loading = false;
+        // Reset retry/session on success
+        sessionStorage.removeItem('otpRetryCount');
+        this.retryCount = 0;
+        this.resendBlocked = false;
       },
       error: () => {
         this.loading = false;
@@ -77,6 +96,10 @@ export class QuickSignonComponent {
   updateProfile(): void {
     this.loading = true;
     const profile = this.profileForm.value;
+    // Reset retry/session on success
+    sessionStorage.removeItem('otpRetryCount');
+    this.retryCount = 0;
+    this.resendBlocked = false;
     this.api.patch<any>('accounts/users/' + this.userDetails.id + "/", profile).subscribe({
       next: (res: any) => {
         if (res) {
@@ -93,6 +116,32 @@ export class QuickSignonComponent {
     });
   }
 
+  startResendTimer(): void {
+    this.resendTimer = 30;
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.timerInterval = setInterval(() => {
+      this.resendTimer--;
+      if (this.resendTimer <= 0) {
+        clearInterval(this.timerInterval);
+      }
+    }, 1000);
+  }
+
+  resendOtp(): void {
+    if (this.resendBlocked || this.resendTimer > 0) return;
+    this.retryCount++;
+    sessionStorage.setItem('otpRetryCount', this.retryCount.toString());
+    if (this.retryCount >= this.maxRetries) {
+      this.resendBlocked = true;
+      return;
+    }
+    this.sendOtp();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+  }
+
   checkPreferences(): void {
     const user = this.userIdentity.userDetails;
     if (!user?.languages?.length || !user?.categories || user.categories.length === 0) {
@@ -101,5 +150,4 @@ export class QuickSignonComponent {
       this.router.navigate(['/']);
     }
   }
-  // ...existing code...
 }

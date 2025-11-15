@@ -10,10 +10,10 @@
 <ng-container *ngIf="!loading && !success">
 	<h2 [ngClass]="config.verifyUserErrorHeadingClass" [innerHtml]="errMessage"></h2>
 	<button [ngClass]="config.verifyUserErrorBtnClass" routerLink="/auth/forgot-password">{{data.verifyUserErrorBtnText}}</button>
-	<button [ngClass]="config.verifyUserErrorLoginBtnClass" routerLink="/auth/login">{{data.verifyUserErrorLoginBtnText}}</button>
+	<button [ngClass]="config.verifyUserErrorLoginBtnClass" routerLink="/auth/quick-signon">{{data.verifyUserErrorLoginBtnText}}</button>
 </ng-container>
 
 <ng-container *ngIf="!loading && success">
 	<h2 [ngClass]="config.verifyUserSuccessHeadingClass" [innerHtml]="data.verifyUserSuccessHeading"></h2>
-	<button [ngClass]="config.verifyUserSuccessBtnClass" routerLink="/auth/login">{{data.verifyUserSuccessBtnText}}</button>
+	<button [ngClass]="config.verifyUserSuccessBtnClass" routerLink="/auth/quick-signon">{{data.verifyUserSuccessBtnText}}</button>
 </ng-container>

@@ -7,7 +7,7 @@ export const authRoutes: Routes = [
     path: '',
     loadComponent: () => import('./auth.component').then(m => m.AuthComponent),
     children: [
-  { path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) },
+  { path: 'quick-signon', loadComponent: () => import('./quick-signon/quick-signon.component').then(m => m.QuickSignonComponent) },
   { path: 'quick-signon', loadComponent: () => import('./quick-signon/quick-signon.component').then(m => m.QuickSignonComponent) },
   { path: 'register', loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent) },
   { path: 'forgot-password', loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
