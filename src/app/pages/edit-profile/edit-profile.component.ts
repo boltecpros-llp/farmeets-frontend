@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { UserIdentityService } from '../../shared/user-identity.service';
 import { ApiHelperService } from '../../shared/api-helper.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-profile',
@@ -14,7 +15,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class EditProfileComponent implements OnInit {
   profileForm!: FormGroup;
-  passwordForm!: FormGroup;
+  languages: any[] = [];
+  categories: any[] = [];
   user: any;
   uploadingProfilePic = false;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -63,13 +65,12 @@ export class EditProfileComponent implements OnInit {
       headers
     });
   }
-  passwordChanged = signal(false);
-
   constructor(
     private fb: FormBuilder,
     private userIdentity: UserIdentityService,
     private api: ApiHelperService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -79,22 +80,12 @@ export class EditProfileComponent implements OnInit {
       lastName: [{ value: this.user?.lastName || '', disabled: true }],
       email: [{ value: this.user?.email || '', disabled: true }],
       phone: [{ value: this.user?.phone || '', disabled: true }],
-      // Add more fields as needed
     });
-    this.passwordForm = this.fb.group({
-      oldPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
-    });
+    this.languages = this.user?.languages || [];
+    this.categories = this.user?.categories || [];
   }
 
-  onChangePassword() {
-    if (this.passwordForm.invalid) return;
-    const { oldPassword, newPassword, confirmPassword } = this.passwordForm.value;
-    this.api.post('/accounts/users/change-password/', { oldPassword, newPassword, confirmPassword }).subscribe({
-      next: () => {
-        this.passwordChanged.set(true);
-      }
-    });
+  onUpdatePreferences() {
+    this.router.navigate(['/auth/update-preference']);
   }
 }

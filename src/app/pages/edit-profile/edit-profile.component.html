@@ -5,7 +5,7 @@
         <div class="card-body text-center">
           <div class="mb-3 position-relative d-inline-block">
             <img [src]="user?.profilePicture || 'https://ui-avatars.com/api/?name=' + (user?.firstName || '') + '+' + (user?.lastName || '')" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
-            <button type="button" class="btn btn-light btn-sm position-absolute top-0 end-0 translate-middle p-1 px-2 border shadow" style="border-radius: 50%;" (click)="triggerFileInput()" aria-label="Change profile picture">
+            <button type="button" class="btn btn-light btn-sm position-absolute top-0 end-0 p-1 px-2 border shadow" style="border-radius: 50%;" (click)="triggerFileInput()" aria-label="Change profile picture">
               <i class="bi bi-pencil-fill"></i>
             </button>
             <input type="file" #fileInput accept="image/*" class="d-none" (change)="onProfilePicChange($event)">
@@ -32,27 +32,22 @@
           </form>
         </div>
       </div>
-      <div class="card shadow-sm">
+      <div class="card shadow-sm mb-4">
         <div class="card-body">
-          <h5 class="mb-3">Change Password</h5>
-          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" *ngIf="!passwordChanged()">
-            <div class="mb-3">
-              <label class="form-label">Current Password</label>
-              <input type="password" class="form-control" formControlName="oldPassword">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">New Password</label>
-              <input type="password" class="form-control" formControlName="newPassword">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Confirm New Password</label>
-              <input type="password" class="form-control" formControlName="confirmPassword">
-            </div>
-            <button type="submit" class="btn btn-primary w-100" [disabled]="passwordForm.invalid">Change Password</button>
-          </form>
-          <div *ngIf="passwordChanged()" class="alert alert-success text-center">
-            Password changed successfully!
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">My Languages</h5>
+            <button class="btn btn-outline-success" (click)="onUpdatePreferences()"><i class="bi bi-pencil-fill"></i></button>
           </div>
+          <ul class="list-group mb-3">
+            <li class="list-group-item" *ngFor="let lang of languages">{{ lang.name }}</li>
+          </ul>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">My Categories</h5>
+            <button class="btn btn-outline-success" (click)="onUpdatePreferences()"><i class="bi bi-pencil-fill"></i></button>
+          </div>
+          <ul class="list-group mb-3">
+            <li class="list-group-item" *ngFor="let cat of categories">{{ cat.names?.en }}</li>
+          </ul>
         </div>
       </div>
     </div>
