@@ -16,6 +16,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./social-card.scss']
 })
 export class SocialCard implements OnInit, AfterViewInit {
+
     @ViewChildren('postGraphicText') postGraphicTextRefs!: QueryList<ElementRef>;
     facebookShareUrl = '';
     linkedinShareUrl = '';
@@ -78,15 +79,10 @@ export class SocialCard implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
-        setTimeout(() => {
-            this.applyGraphicTextFontSizes();
-        }, 0);
     }
 
     ngOnChanges() {
-        setTimeout(() => {
-            this.applyGraphicTextFontSizes();
-        }, 0);
+
     }
 
     applyGraphicTextFontSizes() {
@@ -111,7 +107,11 @@ export class SocialCard implements OnInit, AfterViewInit {
             const maxFontSize = 48;
             const k = 1.2;
             const textLength = Math.max(text.length, 1);
-            let fontSize = k * Math.sqrt((rect.width * rect.height) / textLength);
+            // Consider 1rem (~16px) padding on all sides for the box
+            const padding = 16 * 2; // left + right
+            const usableWidth = Math.max(rect.width - padding, 1);
+            const usableHeight = Math.max(rect.height - padding, 1);
+            let fontSize = (k * Math.sqrt((usableWidth * usableHeight) / textLength)) - 2;
             fontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize));
             this.renderer.setStyle(el, 'font-size', fontSize + 'px');
             this.renderer.setStyle(el, 'display', 'flex');
@@ -139,6 +139,21 @@ export class SocialCard implements OnInit, AfterViewInit {
         return null;
     }
 
+    /**
+ * Returns true if the current card's graphic text is scrollable and not at end
+ */
+    private isGraphicTextScrollPending(): boolean {
+        if (!this.postCards.length) return false;
+        const card = this.postCards[this.currentIndex];
+        if (!card) return false;
+        const graphicText = card.querySelector('.post-graphic-text') as HTMLElement | null;
+        if (!graphicText) return false;
+        const isScrollable = graphicText.style.overflowY === 'auto' || getComputedStyle(graphicText).overflowY === 'auto';
+        if (!isScrollable) return false;
+        // Check if not at end
+        return graphicText.scrollTop + graphicText.clientHeight < graphicText.scrollHeight - 1;
+    }
+
     fetchBlogs(reset: boolean = false) {
         const params: any = {
             page: this.page,
@@ -158,8 +173,18 @@ export class SocialCard implements OnInit, AfterViewInit {
                 } else {
                     this.blogs = [...this.blogs, ...newBlogs];
                 }
+
+                this.blogs = this.blogs.map(item => {
+                    if (!item.textStyle) {
+                        const randomStyle = `style-${Math.floor(Math.random() * 10) + 1}`;
+                        return { ...item, textStyle: randomStyle };
+                    }
+                    return item;
+                })
+
                 setTimeout(() => {
                     this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
+                    this.applyGraphicTextFontSizes();
                 }, 100);
 
                 this.blogs.forEach((blog: any) => {
@@ -176,6 +201,7 @@ export class SocialCard implements OnInit, AfterViewInit {
                 }
                 setTimeout(() => {
                     this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
+                    this.applyGraphicTextFontSizes();
                 }, 100);
 
                 this.likeDislikeMap = {};
@@ -207,8 +233,15 @@ export class SocialCard implements OnInit, AfterViewInit {
     @HostListener('window:wheel', ['$event'])
     onWheel(e: WheelEvent) {
         if (this.isScrolling) return;
-        if (e.deltaY > 0) this.scrollToPost(this.currentIndex + 1);
-        else if (e.deltaY < 0) this.scrollToPost(this.currentIndex - 1);
+        if (e.deltaY > 0) {
+            if (this.isGraphicTextScrollPending()) {
+                // Let user scroll graphic text, not card
+                return;
+            }
+            this.scrollToPost(this.currentIndex + 1);
+        } else if (e.deltaY < 0) {
+            this.scrollToPost(this.currentIndex - 1);
+        }
     }
 
     touchStartY = 0;
@@ -223,6 +256,10 @@ export class SocialCard implements OnInit, AfterViewInit {
         const deltaY = this.touchStartY - e.changedTouches[0].clientY;
         if (Math.abs(deltaY) > 20) {
             if (deltaY > 0) {
+                if (this.isGraphicTextScrollPending()) {
+                    // Let user scroll graphic text, not card
+                    return;
+                }
                 this.scrollToPost(this.currentIndex + 1);
             } else {
                 this.scrollToPost(this.currentIndex - 1);

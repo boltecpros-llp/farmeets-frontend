@@ -34,7 +34,7 @@
           </div>
           <!-- Media -->
           <div
-            class="post-media position-relative d-flex align-items-center justify-content-center bg-dark flex-grow-1 social-card-media">
+            class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
             <ng-container *ngIf="blog.images?.length > 0">
               <carousel *ngIf="blog.images.length > 1" [itemsPerSlide]="1" [noWrap]="false">
                 <ng-container *ngFor="let img of blog.images">
@@ -55,8 +55,8 @@
                 class="w-100 h-100 object-fit-cover" />
             </ng-container>
             <ng-container *ngIf="!blog.images?.length && !blog.image && !blog.videos?.length && !blog.video">
-              <div #postGraphicText [ngClass]="'post-graphic-text ' + (blog.textStyle ? blog.textStyle : 'style-1')"
-                style="height: calc(100% - 56px); min-height: 120px;">
+              <div #postGraphicText [ngClass]="blog.textStyle" class="post-graphic-text"
+                style="height: calc(100% - 60px); min-height: 120px;">
                 {{ blog.description }}
               </div>
             </ng-container>

@@ -43,15 +43,13 @@
 .post-graphic-text {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 16px;
+  display: block;
   text-align: center;
-  padding: 8px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: auto;
   word-break: break-word;
-  font-size: clamp(1.2rem, 4vw, 2.5rem);
+  // font-size: clamp(0.7rem, 2vw, 2.5rem);
 }
 // Copy of blog-listing.scss. Adjust styles for social-card if needed.
 
@@ -221,19 +219,6 @@
 .style-10 {
   background: linear-gradient(135deg, #11998e 0%, #099a40 50%, #11998e 100%);
   color: #fff;
-}
-
-.post-graphic-text {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 8px;
-  font-weight: 700;
-  line-height: 1.1;
-  word-break: break-word;
 }
 
 .social-card {
