@@ -187,7 +187,19 @@ export class SocialCard implements OnInit, AfterViewInit {
 
                 this.blogs = this.blogs.map(item => {
                     const randomStyle = item.textStyle || `style-${Math.floor(Math.random() * 10) + 1}`;
-                    const blogTitleSlug = item.title ? item.title.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase() : '';
+                    const blogTitleSlug = item.title
+                        ? item.title.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase()
+                        : (item.description
+                            ? item.description.replace(/<[^>]+>/g, '') // Remove HTML tags
+                                .replace(/\s+/g, ' ') // Normalize spaces
+                                .trim()
+                                .split(' ')
+                                .map((word: string) => word.replace(/[^a-zA-Z0-9]/g, '')) // Remove non-alphanumeric chars from each word
+                                .filter((word: string) => word.length > 0)
+                                .slice(0, 6)
+                                .join('-')
+                                .toLowerCase()
+                            : '');
                     const shareUrl = window.location.origin + `/blogs/${item.id}/${blogTitleSlug}`;
                     const descriptionHtml = item.description || '';
                     const descriptionText = descriptionHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
