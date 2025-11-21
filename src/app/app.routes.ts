@@ -7,6 +7,7 @@ import { AuthGuard } from './auth/auth.guard';
 
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { SocialCard } from './shared/social-card/social-card';
+import { COMPANY_ROUTES } from './company/company.module';
 
 export const routes: Routes = [
     // { path: '', component: Home },
@@ -25,9 +26,13 @@ export const routes: Routes = [
         // canActivateChild: [AuthGuard],
         children: [
             { path: '', component: SocialCard },
-            { path: 'blog/:blogId/:blogTitle', component: BlogDetails },
+            { path: 'blog/:blogId/:blogTitle', component: SocialCard },
             { path: 'category/:categoryId', component: BlogListing },
             { path: ':categoryId/create-post', component: CreatePostComponent },
+            {
+                path: 'company',
+                children: COMPANY_ROUTES
+            },
         ]
     },
     {

@@ -7,7 +7,6 @@ import { ApiHelperService } from '../api-helper.service';
 import { combineLatest } from 'rxjs';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-
 @Component({
     selector: 'app-social-card',
     standalone: true,
@@ -23,13 +22,6 @@ export class SocialCard implements OnInit, AfterViewInit {
     whatsappShareUrl = '';
     xShareUrl = '';
     copySuccess = false;
-    setShareUrls(blog: any) {
-        const shareUrl = encodeURIComponent(blog?.shareUrl || window.location.origin + '/posts/' + blog.id);
-        this.facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
-        this.linkedinShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`;
-        this.whatsappShareUrl = `https://wa.me/?text=${shareUrl}`;
-        this.xShareUrl = `https://x.com/intent/tweet?url=${shareUrl}`;
-    }
 
     copyUrl(blog: any) {
         if (navigator.clipboard) {
@@ -178,6 +170,11 @@ export class SocialCard implements OnInit, AfterViewInit {
             params.category = this.categoryId;
         }
         if (this.search) params.search = this.search;
+        // If blogId is present in route param, send postId as query param
+        const blogId = this.route.snapshot.paramMap.get('blogId');
+        if (blogId) {
+            params.postId = blogId;
+        }
         this.api.get<any>('/posts/posts/', { params }).subscribe({
             next: (data: any) => {
                 const newBlogs = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
@@ -189,12 +186,23 @@ export class SocialCard implements OnInit, AfterViewInit {
                 }
 
                 this.blogs = this.blogs.map(item => {
-                    if (!item.textStyle) {
-                        const randomStyle = `style-${Math.floor(Math.random() * 10) + 1}`;
-                        return { ...item, textStyle: randomStyle };
-                    }
-                    return item;
-                })
+                    const randomStyle = item.textStyle || `style-${Math.floor(Math.random() * 10) + 1}`;
+                    const blogTitleSlug = item.title ? item.title.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase() : '';
+                    const shareUrl = window.location.origin + `/blogs/${item.id}/${blogTitleSlug}`;
+                    const descriptionHtml = item.description || '';
+                    const descriptionText = descriptionHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+                    return {
+                        ...item,
+                        textStyle: randomStyle,
+                        shareUrl,
+                        socialUrls: {
+                            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+                            linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(descriptionText)}&summary=${encodeURIComponent(descriptionText)}`,
+                            whatsapp: `https://wa.me/?text=${encodeURIComponent(descriptionText + ' ' + shareUrl)}`,
+                            x: `https://x.com/intent/tweet?text=${encodeURIComponent(descriptionText + ' ' + shareUrl)}`
+                        }
+                    };
+                });
 
                 setTimeout(() => {
                     this.postCards = this.el.nativeElement.querySelectorAll('.post-card');
@@ -315,7 +323,6 @@ export class SocialCard implements OnInit, AfterViewInit {
     openCommentModal(blog: any) {
         this.commentModalBlog = blog;
         this.newComment = '';
-        this.setShareUrls(blog);
     }
 
     closeCommentModal() {
@@ -337,5 +344,9 @@ export class SocialCard implements OnInit, AfterViewInit {
         }, () => {
             this.isSubmittingComment = false;
         });
+    }
+
+    encodeUrl(url: string): string {
+        return encodeURIComponent(url);
     }
 }

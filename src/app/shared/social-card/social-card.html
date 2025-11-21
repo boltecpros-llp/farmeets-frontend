@@ -115,16 +115,16 @@
                 <i class="bi bi-share me-1"></i>
               </button>
               <div ngbDropdownMenu class="shadow">
-                <a ngbDropdownItem class="dropdown-item" [href]="facebookShareUrl" target="_blank"><i
-                    class="bi bi-facebook me-1"></i> Facebook</a>
-                <a ngbDropdownItem class="dropdown-item" [href]="linkedinShareUrl" target="_blank"><i
-                    class="bi bi-linkedin me-1"></i> LinkedIn</a>
-                <a ngbDropdownItem class="dropdown-item" [href]="whatsappShareUrl" target="_blank"><i
-                    class="bi bi-whatsapp me-1"></i> WhatsApp</a>
-                <a ngbDropdownItem class="dropdown-item" [href]="xShareUrl" target="_blank"><i
-                    class="bi bi-twitter-x me-1"></i> X</a>
+                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.facebook" target="_blank"><i
+                      class="bi bi-facebook me-1"></i> Facebook</a>
+                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.linkedin" target="_blank"><i
+                      class="bi bi-linkedin me-1"></i> LinkedIn</a>
+                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.whatsapp" target="_blank"><i
+                      class="bi bi-whatsapp me-1"></i> WhatsApp</a>
+                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.x" target="_blank"><i
+                      class="bi bi-twitter-x me-1"></i> X</a>
                 <button ngbDropdownItem class="dropdown-item" type="button" (click)="copyUrl(blog)"><i
-                    class="bi bi-clipboard me-1"></i> Copy Link</button>
+                  class="bi bi-clipboard me-1"></i> Copy Link</button>
               </div>
               <div *ngIf="copySuccess" class="small text-success mt-1">Link copied!</div>
             </div>

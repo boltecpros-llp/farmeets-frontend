@@ -1,0 +1,53 @@
+<div class="container py-2">
+  <div *ngIf="company; else loading">
+    <div class="card mb-3">
+      <div class="ratio ratio-4x3 mb-3">
+        <img *ngIf="company.logo; else logoPlaceholder" [src]="company.logo" alt="Company Logo"
+          class="card-img-top object-fit-contain w-100 h-100" />
+        <ng-template #logoPlaceholder>
+          <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
+            <i class="bi bi-image fs-1"></i>
+          </div>
+        </ng-template>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">{{ company.name }}</h3>
+        <div><strong>Type: </strong>{{ company.companyType }}</div>
+        <div><strong>Categories: </strong>
+          <span *ngIf="categoryNames; else noCat">{{ categoryNames }}</span>
+          <ng-template #noCat><span class="text-muted">None</span></ng-template>
+        </div>
+        <div><strong>Languages: </strong>
+          <span *ngIf="languageNames; else noLang">{{ languageNames }}</span>
+          <ng-template #noLang><span class="text-muted">None</span></ng-template>
+        </div>
+        <div class="card-text" [innerHTML]="company.description"></div>
+
+        <div *ngIf="company.images?.length">
+          <strong>Images:</strong>
+          <div *ngIf="company.images.length > 1" class="row mb-3">
+            <div class="col-4 mb-2" *ngFor="let img of company.images">
+              <img [src]="img" alt="Company Image" class="img-fluid rounded w-100 h-100"
+                style="object-fit:cover; aspect-ratio: 4/3;" />
+            </div>
+          </div>
+          <div *ngIf="company.images.length === 1" class="mb-3 text-center">
+            <img [src]="company.images[0]" alt="Company Image" class="img-fluid rounded"
+              style="object-fit:cover; aspect-ratio: 4/3;" />
+          </div>
+        </div>
+        <div *ngIf="company.videos?.length">
+          <strong>Videos:</strong>
+          <div class="row">
+            <div class="col-12 mb-2" *ngFor="let vid of company.videos">
+              <video [src]="vid" controls class="w-100" style="max-height:120px;"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="text-muted">Loading company details...</div>
+  </ng-template>
+</div>

@@ -1,0 +1,47 @@
+<div class="container py-2" style="max-width:480px;">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+      <input id="name" class="form-control" formControlName="name" required />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea id="description" class="form-control" formControlName="description"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="logo" class="form-label">Logo</label>
+      <input type="file" class="form-control" (change)="onLogoChange($event)" accept="image/*" />
+      <img *ngIf="logoPreview" [src]="logoPreview" class="mt-2" style="max-width:120px;max-height:120px;object-fit:cover;" />
+    </div>
+    <div class="mb-3">
+      <label for="companyType" class="form-label">Company Type <span class="text-danger">*</span></label>
+      <select id="companyType" class="form-select" formControlName="companyType" required>
+        <option value="FPO">FPO</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Categories <span class="text-danger">*</span></label>
+      <select class="form-select" formControlName="category_ids" multiple required>
+        <!-- Populate with categories from API -->
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Languages <span class="text-danger">*</span></label>
+      <select class="form-select" formControlName="language_ids" multiple required>
+        <!-- Populate with languages from API -->
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Images</label>
+      <input type="file" class="form-control" multiple accept="image/*" />
+      <!-- Implement image upload logic -->
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Videos</label>
+      <input type="file" class="form-control" multiple accept="video/*" />
+      <!-- Implement video upload logic -->
+    </div>
+    <button type="submit" class="btn btn-primary mt-3 w-100">Submit</button>
+  </form>
+</div>
