@@ -132,14 +132,14 @@ export class SocialCard implements OnInit, AfterViewInit {
             this.renderer.setStyle(el, 'align-items', 'center');
             this.renderer.setStyle(el, 'justify-content', 'center');
             this.renderer.setStyle(el, 'text-align', 'center');
-            this.renderer.setStyle(el, 'overflow-y', '');
+            this.renderer.setStyle(el, 'overflow-y', 'auto');
             this.renderer.setStyle(el, 'max-height', '');
             setTimeout(() => {
                 if (fontSize === minFontSize && el.scrollHeight > el.offsetHeight) {
-                    this.renderer.setStyle(el, 'overflow-y', 'auto');
+                    // this.renderer.setStyle(el, 'overflow-y', 'auto');
                     this.renderer.setStyle(el, 'max-height', rect.height + 'px');
                 } else {
-                    this.renderer.setStyle(el, 'overflow-y', '');
+                    // this.renderer.setStyle(el, 'overflow-y', '');
                     this.renderer.setStyle(el, 'max-height', '');
                 }
             }, 0);
