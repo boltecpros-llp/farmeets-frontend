@@ -7,6 +7,7 @@ import { ApiHelperService } from '../api-helper.service';
 import { combineLatest } from 'rxjs';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from '../toast/toast.service';
 @Component({
     selector: 'app-social-card',
     standalone: true,
@@ -24,12 +25,22 @@ export class SocialCard implements OnInit, AfterViewInit {
     copySuccess = false;
 
     copyUrl(blog: any) {
+        const url = blog?.shareUrl || window.location.origin + '/posts/' + blog.id;
         if (navigator.clipboard) {
-            navigator.clipboard.writeText(blog?.shareUrl || window.location.origin + '/posts/' + blog.id).then(() => {
+            navigator.clipboard.writeText(url).then(() => {
                 this.copySuccess = true;
+                this.showNotification('Link copied to clipboard!');
                 setTimeout(() => this.copySuccess = false, 2000);
+            }).catch(() => {
+                this.showNotification('Failed to copy link. Please try again.');
             });
+        } else {
+            this.showNotification('Clipboard API not supported.');
         }
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') {
+        this.toast.show(message, type);
     }
     blogs: any[] = [];
     total = 0;
@@ -55,7 +66,8 @@ export class SocialCard implements OnInit, AfterViewInit {
         private router: Router,
         private api: ApiHelperService,
         private renderer: Renderer2,
-        private el: ElementRef
+        private el: ElementRef,
+        private toast: ToastService
     ) { }
 
     ngOnInit() {

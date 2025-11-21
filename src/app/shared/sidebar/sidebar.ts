@@ -16,6 +16,9 @@ export class Sidebar implements OnInit {
 
   selectedGroup: any = null;
 
+  // Used for conditional rendering of 'My Companies' menu
+  isLoggedIn = false; // TODO: Replace with real authentication check
+
   @Output() groupSelected = new EventEmitter<any>();
 
   constructor(private api: ApiHelperService, private router: Router, private route: ActivatedRoute) { }

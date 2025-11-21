@@ -9,6 +9,7 @@ import { ApiHelperService } from '../../shared/api-helper.service';
 import { HttpEventType, HttpClient } from '@angular/common/http';
 import { UserIdentityService } from '../../shared/user-identity.service';
 import { franc } from 'franc';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
     selector: 'app-create-post',
@@ -55,7 +56,8 @@ export class CreatePostComponent {
         public router: Router,
         private api: ApiHelperService,
         private http: HttpClient,
-        private userIdentity: UserIdentityService
+        private userIdentity: UserIdentityService,
+        private toast: ToastService
     ) {
         this.form = this.fb.group({
             description: ['', Validators.required],
@@ -123,9 +125,14 @@ export class CreatePostComponent {
                         this.imageUploadProgress = 100;
                     }
                 },
-                error: () => {
+                error: (err) => {
                     this.uploadingImages = false;
                     this.imageUploadProgress = 0;
+                    if (err.status === 401) {
+                        this.toast.show('Login first to upload images.', 'error');
+                    } else {
+                        this.toast.show('Image upload failed.', 'error');
+                    }
                 }
             });
         }
@@ -146,9 +153,14 @@ export class CreatePostComponent {
                         this.videoUploadProgress = 100;
                     }
                 },
-                error: () => {
+                error: (err) => {
                     this.uploadingVideos = false;
                     this.videoUploadProgress = 0;
+                    if (err.status === 401) {
+                        this.toast.show('Login first to upload videos.', 'error');
+                    } else {
+                        this.toast.show('Video upload failed.', 'error');
+                    }
                 }
             });
         }
