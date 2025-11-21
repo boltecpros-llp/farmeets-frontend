@@ -96,22 +96,36 @@ export class SocialCard implements OnInit, AfterViewInit {
     /**
      * Dynamically gets the width, height, and text content of the .post-graphic-text element,
      * calculates an appropriate font size to fit the text, and applies it.
-     * Returns { width, height, text, fontSize } or null if not found
+     * For HTML content, counts only text nodes and accounts for paragraph/headings margins.
      */
     adjustPostGraphicTextFontSize(ref: ElementRef): { width: number, height: number, text: string, fontSize: number } | null {
         if (ref && ref.nativeElement) {
             const el = ref.nativeElement as HTMLElement;
             const rect = el.getBoundingClientRect();
-            const text = el.textContent?.trim() || '';
+            // Extract only text nodes, ignore tags
+            let textLength = 0;
+            let paragraphCount = 0;
+            let headingCount = 0;
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (node && node.textContent) {
+                    textLength += node.textContent.trim().length;
+                }
+            }
+            // Count paragraphs and headings for margin compensation
+            paragraphCount = el.querySelectorAll('p').length;
+            headingCount = el.querySelectorAll('h1, h2, h3, h4, h5, h6').length;
+            // Each paragraph/heading adds extra margin, so reduce usable height
+            const marginPerBlock = 12; // px, adjust as needed
+            const totalMargin = (paragraphCount + headingCount) * marginPerBlock;
             const minFontSize = 16;
             const maxFontSize = 48;
             const k = 1.2;
-            const textLength = Math.max(text.length, 1);
-            // Consider 1rem (~16px) padding on all sides for the box
             const padding = 16 * 2; // left + right
             const usableWidth = Math.max(rect.width - padding, 1);
-            const usableHeight = Math.max(rect.height - padding, 1);
-            let fontSize = (k * Math.sqrt((usableWidth * usableHeight) / textLength)) - 2;
+            const usableHeight = Math.max(rect.height - padding - totalMargin, 1);
+            let fontSize = (k * Math.sqrt((usableWidth * usableHeight) / Math.max(textLength, 1))) - 2;
             fontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize));
             this.renderer.setStyle(el, 'font-size', fontSize + 'px');
             this.renderer.setStyle(el, 'display', 'flex');
@@ -132,7 +146,7 @@ export class SocialCard implements OnInit, AfterViewInit {
             return {
                 width: rect.width,
                 height: rect.height,
-                text,
+                text: el.textContent?.trim() || '',
                 fontSize
             };
         }

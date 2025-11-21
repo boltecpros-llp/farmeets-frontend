@@ -190,6 +190,11 @@ export class CreatePostComponent {
         if (selectedLang) {
             formValue.language = selectedLang.id;
         }
+        // Extract first http/https URL (full domain and path) from description and add to 'link' field
+        const urlRegex = /(https?:\/\/(?:[\w-]+\.)+[\w-]+(?:\:[0-9]+)?(?:\/[\w\-\.~:\/?#\[\]@!$&'()*+,;=%]*)?)/i;
+        const desc = formValue.description || '';
+        const match = desc.match(urlRegex);
+        formValue.link = match ? match[0] : '';
         console.log(formValue);
         if (this.form.valid) {
             this.api.post('/posts/posts/', formValue).subscribe({

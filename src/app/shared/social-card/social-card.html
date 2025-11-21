@@ -32,40 +32,63 @@
             </div>
             <!-- <span class="badge bg-warning ms-auto p-1 px-2">{{ blog.status }}</span> -->
           </div>
-          <!-- Media -->
-          <div
-            class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
-            <ng-container *ngIf="blog.images?.length > 0">
-              <carousel *ngIf="blog.images.length > 1" [itemsPerSlide]="1" [noWrap]="false">
+          <!-- Media & Link Preview -->
+          <div class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
+            <!-- Additional Link Preview (above media/caption, does not affect existing logic) -->
+            <ng-container *ngIf="blog.socialLink">
+              <div class="link-preview d-flex align-items-center gap-2 p-2 bg-white rounded shadow-sm mb-2">
+                <img *ngIf="blog.socialLink.image" [src]="blog.socialLink.image" alt="link image" class="rounded" style="width:40px;height:40px;object-fit:cover;">
+                <div class="flex-grow-1">
+                  <a [href]="blog.socialLink.url" target="_blank" class="fw-bold text-primary text-truncate d-block" style="max-width:220px;">
+                    {{ blog.socialLink.title }}
+                  </a>
+                  <div class="small text-muted text-truncate" style="max-width:220px;">{{ blog.socialLink.description }}</div>
+                  <div class="small text-secondary text-truncate" style="max-width:220px;">
+                    <a [href]="blog.socialLink.url" target="_blank" class="text-decoration-underline">{{ blog.socialLink.url }}</a>
+                  </div>
+                </div>
+                <a [href]="blog.socialLink.url" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" title="Open link">
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+              </div>
+            </ng-container>
+            <!-- ...existing media logic... -->
+
+            <!-- CASE 1: Image/Video present -->
+            <ng-container *ngIf="(blog.images?.length > 0 || blog.videos?.length > 0)">
+              <carousel *ngIf="blog.images?.length > 1" [itemsPerSlide]="1" [noWrap]="false">
                 <ng-container *ngFor="let img of blog.images">
                   <slide>
                     <ng-container *ngIf="img; else slidePlaceholder">
-                      <img [src]="img" alt="{{blog.title}}" class="w-100 h-100 object-fit-cover" />
+                      <img [src]="img" alt="{{blog.title}}" class="w-100 h-100 object-fit-contain" />
                     </ng-container>
                     <ng-template #slidePlaceholder>
-                      <div
-                        class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary social-card-slide-placeholder">
+                      <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary social-card-slide-placeholder">
                         <i class="bi bi-image fs-1"></i>
                       </div>
                     </ng-template>
                   </slide>
                 </ng-container>
               </carousel>
-              <img *ngIf="blog.images.length === 1" [src]="blog.images[0]" alt="{{blog.title}}"
-                class="w-100 h-100 object-fit-cover" />
+              <img *ngIf="blog.images?.length === 1" [src]="blog.images[0]" alt="{{blog.title}}" class="w-100 h-100 object-fit-contain" />
+              <video *ngIf="blog.videos?.length === 1" [src]="blog.videos[0]" controls class="w-100 h-100 object-fit-contain"></video>
             </ng-container>
-            <ng-container *ngIf="!blog.images?.length && !blog.image && !blog.videos?.length && !blog.video">
-              <div #postGraphicText [ngClass]="blog.textStyle" class="post-graphic-text"
-                style="height: calc(100% - 60px); min-height: 120px;">
-                {{ blog.description }}
+
+            <!-- CASE 2: No image/video, but socialLink.image present -->
+            <ng-container *ngIf="!(blog.images?.length > 0 || blog.videos?.length > 0) && blog.socialLink?.image">
+              <img [src]="blog.socialLink.image" alt="link image" class="w-100 h-100 object-fit-contain" />
+            </ng-container>
+
+            <!-- CASE 3: No image/video anywhere, show graphic text -->
+            <ng-container *ngIf="!(blog.images?.length > 0 || blog.videos?.length > 0) && !blog.socialLink?.image">
+              <div #postGraphicText [ngClass]="blog.textStyle" class="post-graphic-text" style="height: calc(100% - 60px); min-height: 120px;">
+                <div [innerHTML]="blog.description"></div>
               </div>
             </ng-container>
           </div>
-          <!-- Caption -->
-          <ng-container *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video">
-            <div
-              class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
-              (click)="toggleCaption($event)">
+          <!-- Caption (only if image, video, or socialLink.image is present) -->
+          <ng-container *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video || blog.socialLink?.image">
+            <div class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable" (click)="toggleCaption($event)">
               <div class="extra-content">
                 <h5 class="m-1">{{ blog.title }}</h5>
                 <div class="m-0" [innerHTML]="blog.description"></div>
