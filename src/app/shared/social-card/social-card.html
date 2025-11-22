@@ -33,21 +33,26 @@
             <!-- <span class="badge bg-warning ms-auto p-1 px-2">{{ blog.status }}</span> -->
           </div>
           <!-- Media & Link Preview -->
-          <div class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
+          <div
+            class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
             <!-- Additional Link Preview (above media/caption, does not affect existing logic) -->
             <ng-container *ngIf="blog.socialLink">
               <div class="link-preview d-flex align-items-center gap-2 p-2 bg-white rounded shadow-sm mb-2">
-                <img *ngIf="blog.socialLink.image" [src]="blog.socialLink.image" alt="link image" class="rounded" style="width:40px;height:40px;object-fit:cover;">
+                <img *ngIf="blog.socialLink.image" [src]="blog.socialLink.image" alt="link image" class="rounded"
+                  style="width:40px;height:40px;object-fit:cover;">
                 <div class="flex-grow-1">
-                  <a [href]="blog.socialLink.url" target="_blank" class="fw-bold text-primary text-truncate d-block" style="max-width:220px;">
+                  <a [href]="blog.socialLink.url" target="_blank" class="fw-bold text-primary text-truncate d-block"
+                    style="max-width:220px;">
                     {{ blog.socialLink.title }}
                   </a>
-                  <div class="small text-muted text-truncate" style="max-width:220px;">{{ blog.socialLink.description }}</div>
+                  <div class="small text-muted text-truncate" style="max-width:220px;">{{ blog.socialLink.description }}
+                  </div>
                   <!-- <div class="small text-secondary text-truncate" style="max-width:220px;">
                     <a [href]="blog.socialLink.url" target="_blank" class="text-decoration-underline">{{ blog.socialLink.url }}</a>
                   </div> -->
                 </div>
-                <a [href]="blog.socialLink.url" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" title="Open link">
+                <a [href]="blog.socialLink.url" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle"
+                  title="Open link">
                   <i class="bi bi-box-arrow-up-right"></i>
                 </a>
               </div>
@@ -63,15 +68,18 @@
                       <img [src]="img" alt="{{blog.title}}" class="w-100 h-100 object-fit-contain" />
                     </ng-container>
                     <ng-template #slidePlaceholder>
-                      <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary social-card-slide-placeholder">
+                      <div
+                        class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary social-card-slide-placeholder">
                         <i class="bi bi-image fs-1"></i>
                       </div>
                     </ng-template>
                   </slide>
                 </ng-container>
               </carousel>
-              <img *ngIf="blog.images?.length === 1" [src]="blog.images[0]" alt="{{blog.title}}" class="w-100 h-100 object-fit-contain" />
-              <video *ngIf="blog.videos?.length === 1" [src]="blog.videos[0]" controls class="w-100 h-100 object-fit-contain"></video>
+              <img *ngIf="blog.images?.length === 1" [src]="blog.images[0]" alt="{{blog.title}}"
+                class="w-100 h-100 object-fit-contain" />
+              <video *ngIf="blog.videos?.length === 1" [src]="blog.videos[0]" controls
+                class="w-100 h-100 object-fit-contain"></video>
             </ng-container>
 
             <!-- CASE 2: No image/video, but socialLink.image present -->
@@ -81,14 +89,18 @@
 
             <!-- CASE 3: No image/video anywhere, show graphic text -->
             <ng-container *ngIf="!(blog.images?.length > 0 || blog.videos?.length > 0) && !blog.socialLink?.image">
-              <div #postGraphicText [ngClass]="blog.textStyle" class="post-graphic-text" style="height: calc(100% - 60px); min-height: 120px;">
+              <div #postGraphicText [ngClass]="blog.textStyle" class="post-graphic-text"
+                style="height: calc(100% - 60px); min-height: 120px;">
                 <div [innerHTML]="blog.description"></div>
               </div>
             </ng-container>
           </div>
           <!-- Caption (only if image, video, or socialLink.image is present) -->
-          <ng-container *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video || blog.socialLink?.image">
-            <div class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable" (click)="toggleCaption($event)">
+          <ng-container
+            *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video || blog.socialLink?.image">
+            <div
+              class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
+              (click)="toggleCaption($event)">
               <div class="extra-content">
                 <h5 class="m-1">{{ blog.title }}</h5>
                 <div class="m-0" [innerHTML]="blog.description"></div>
@@ -102,11 +114,11 @@
               <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="blog.likeDislike === true"></i> {{
               likeCountMap[blog.id] || blog.likes_count || 0 }}
             </button>
-            <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === false"
+            <!-- <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === false"
               (click)="onLikeDislike(blog, false)">
               <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="blog.likeDislike === false"></i> {{
               dislikeCountMap[blog.id] || blog.dislikes_count || 0 }}
-            </button>
+            </button> -->
             <button class="btn btn-link p-0 text-white text-decoration-none" (click)="openCommentModal(blog)">
               <i class="bi bi-chat-left-text me-1"></i> {{ (commentsMap[blog.id]?.length || blog.comments_count || 0) }}
             </button>
@@ -115,16 +127,16 @@
                 <i class="bi bi-share me-1"></i>
               </button>
               <div ngbDropdownMenu class="shadow">
-                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.facebook" target="_blank"><i
-                      class="bi bi-facebook me-1"></i> Facebook</a>
-                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.linkedin" target="_blank"><i
-                      class="bi bi-linkedin me-1"></i> LinkedIn</a>
-                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.whatsapp" target="_blank"><i
-                      class="bi bi-whatsapp me-1"></i> WhatsApp</a>
-                    <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.x" target="_blank"><i
-                      class="bi bi-twitter-x me-1"></i> X</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.facebook" target="_blank"><i
+                    class="bi bi-facebook me-1"></i> Facebook</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.linkedin" target="_blank"><i
+                    class="bi bi-linkedin me-1"></i> LinkedIn</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.whatsapp" target="_blank"><i
+                    class="bi bi-whatsapp me-1"></i> WhatsApp</a>
+                <a ngbDropdownItem class="dropdown-item" [href]="blog.socialUrls.x" target="_blank"><i
+                    class="bi bi-twitter-x me-1"></i> X</a>
                 <button ngbDropdownItem class="dropdown-item" type="button" (click)="copyUrl(blog)"><i
-                  class="bi bi-clipboard me-1"></i> Copy Link</button>
+                    class="bi bi-clipboard me-1"></i> Copy Link</button>
               </div>
               <div *ngIf="copySuccess" class="small text-success mt-1">Link copied!</div>
             </div>
@@ -158,3 +170,6 @@
         <button type="button" class="btn btn-primary" [disabled]="isSubmittingComment || !newComment.trim()"
           (click)="submitComment(commentModalBlog)">Submit</button>
       </div>
+    </div>
+  </div>
+</div>

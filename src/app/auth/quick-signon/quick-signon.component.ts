@@ -1,15 +1,15 @@
-
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserIdentityService } from '../../shared/user-identity.service';
 import { ApiHelperService } from '../../shared/api-helper.service';
+import { NgbActiveModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-quick-signon',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbModalModule],
   templateUrl: './quick-signon.component.html',
   styleUrls: ['./quick-signon.component.scss']
 })
@@ -26,12 +26,20 @@ export class QuickSignonComponent implements OnDestroy {
   resendBlocked: boolean = false;
   timerInterval: any = null;
 
+  isModal: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private userIdentity: UserIdentityService,
-    private api: ApiHelperService
+    private api: ApiHelperService,
+    @Optional() private modal: NgbActiveModal
   ) {
+
+    console.log(this.modal)
+
+    this.isModal = !!this.modal;
+
     this.form = this.fb.group({
       mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       otp: ['']
@@ -145,9 +153,15 @@ export class QuickSignonComponent implements OnDestroy {
   checkPreferences(): void {
     const user = this.userIdentity.userDetails;
     if (!user?.languages?.length || !user?.categories || user.categories.length === 0) {
+
       this.router.navigate(['/auth/update-preference']);
+
     } else {
-      this.router.navigate(['/']);
+      if (this.isModal && this.modal) {
+        this.modal.close(user);
+      } else {
+        this.router.navigate(['/']);
+      }
     }
   }
 }

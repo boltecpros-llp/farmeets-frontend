@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return true;
     } else {
       if (!next.routeConfig?.path?.includes('auth')) {
-        this.router.navigate(['auth/quick-signon'], { queryParams: next.queryParams });
+        this.router.navigate(['/auth/quick-signon'], { queryParams: next.queryParams });
         return false;
       }
       return true;
@@ -59,7 +59,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return true;
     } else {
       if (!childRoute.routeConfig?.path?.includes('auth')) {
-        this.router.navigate(['/']);
+        this.router.navigate(['/auth/quick-signon']);
         return false;
       }
       return true;

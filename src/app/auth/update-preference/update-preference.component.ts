@@ -57,6 +57,10 @@ export class UpdatePreferenceComponent {
   ) { }
 
   ngOnInit() {
+    // Preselect languages and categories from user details
+    const user = this.userIdentity.userDetails;
+    this.selectedLanguages = Array.isArray(user?.languages) ? [...user.languages] : [];
+    this.selectedCategories = Array.isArray(user?.categories) ? [...user.categories] : [];
     this.loadingLanguages = true;
     this.api.get('/posts/languages/').subscribe({
       next: (res: any) => {

@@ -1,17 +1,19 @@
 import { Component, OnInit, Renderer2, HostListener, ViewChildren, ElementRef, AfterViewInit, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbPaginationModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router, Params, RouterModule } from '@angular/router';
 import { ApiHelperService } from '../api-helper.service';
 import { combineLatest } from 'rxjs';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../toast/toast.service';
+import { UserIdentityService } from '../user-identity.service';
+import { QuickSignonComponent } from '../../auth/quick-signon/quick-signon.component';
 @Component({
     selector: 'app-social-card',
     standalone: true,
-    imports: [CommonModule, FormsModule, NgbPaginationModule, RouterModule, CarouselModule, NgbDropdownModule],
+    imports: [CommonModule, FormsModule, NgbPaginationModule, RouterModule, CarouselModule, NgbDropdownModule, QuickSignonComponent],
     templateUrl: './social-card.html',
     styleUrls: ['./social-card.scss']
 })
@@ -60,6 +62,7 @@ export class SocialCard implements OnInit, AfterViewInit {
     commentModalBlog: any = null;
     newComment: string = '';
     isSubmittingComment = false;
+    private pendingAction: (() => void) | null = null;
 
     constructor(
         private route: ActivatedRoute,
@@ -67,7 +70,9 @@ export class SocialCard implements OnInit, AfterViewInit {
         private api: ApiHelperService,
         private renderer: Renderer2,
         private el: ElementRef,
-        private toast: ToastService
+        private toast: ToastService,
+        private userIdentity: UserIdentityService,
+        private modalService: NgbModal
     ) { }
 
     ngOnInit() {
@@ -319,28 +324,54 @@ export class SocialCard implements OnInit, AfterViewInit {
         event.stopPropagation();
     }
 
-    onLikeDislike(blog: any, like: boolean) {
-        const referenceId = blog.id;
-        let newValue: boolean | null = like;
-        if (this.likeDislikeMap[referenceId] === like) {
-            newValue = null;
+    private checkLoginOrPrompt(action: () => void) {
+        if (this.userIdentity.isValidToken()) {
+            action();
+        } else {
+            this.pendingAction = action;
+            const modalRef = this.modalService.open(QuickSignonComponent,
+                {
+                    centered: true,
+                    backdrop: 'static'
+                }
+            );
+            modalRef.result.then(
+                () => {
+                    if (this.userIdentity.isValidToken() && this.pendingAction) {
+                        this.pendingAction();
+                        this.pendingAction = null;
+                    }
+                },
+                () => {
+                    this.pendingAction = null;
+                }
+            );
         }
-        this.api.post('/posts/like-dislikes/', {
-            referenceId,
-            relatedTo: 'post',
-            likeDislike: newValue
-        }).subscribe(() => {
-            if (this.likeDislikeMap[referenceId] === true && newValue === null) this.likeCountMap[referenceId] = Math.max(0, (this.likeCountMap[referenceId] || 0) - 1);
-            if (this.likeDislikeMap[referenceId] === false && newValue === null) this.dislikeCountMap[referenceId] = Math.max(0, (this.dislikeCountMap[referenceId] || 0) - 1);
-            if (this.likeDislikeMap[referenceId] !== true && newValue === true) {
-                this.likeCountMap[referenceId] = (this.likeCountMap[referenceId] || 0) + 1;
-                if (this.likeDislikeMap[referenceId] === false) this.dislikeCountMap[referenceId] = Math.max(0, (this.dislikeCountMap[referenceId] || 0) - 1);
+    }
+    onLikeDislike(blog: any, like: boolean) {
+        this.checkLoginOrPrompt(() => {
+            const referenceId = blog.id;
+            let newValue: boolean | null = like;
+            if (this.likeDislikeMap[referenceId] === like) {
+                newValue = null;
             }
-            if (this.likeDislikeMap[referenceId] !== false && newValue === false) {
-                this.dislikeCountMap[referenceId] = (this.dislikeCountMap[referenceId] || 0) + 1;
-                if (this.likeDislikeMap[referenceId] === true) this.likeCountMap[referenceId] = Math.max(0, (this.likeCountMap[referenceId] || 0) - 1);
-            }
-            this.likeDislikeMap[referenceId] = newValue;
+            this.api.post('/posts/like-dislikes/', {
+                referenceId,
+                relatedTo: 'post',
+                likeDislike: newValue
+            }).subscribe(() => {
+                if (this.likeDislikeMap[referenceId] === true && newValue === null) this.likeCountMap[referenceId] = Math.max(0, (this.likeCountMap[referenceId] || 0) - 1);
+                if (this.likeDislikeMap[referenceId] === false && newValue === null) this.dislikeCountMap[referenceId] = Math.max(0, (this.dislikeCountMap[referenceId] || 0) - 1);
+                if (this.likeDislikeMap[referenceId] !== true && newValue === true) {
+                    this.likeCountMap[referenceId] = (this.likeCountMap[referenceId] || 0) + 1;
+                    if (this.likeDislikeMap[referenceId] === false) this.dislikeCountMap[referenceId] = Math.max(0, (this.dislikeCountMap[referenceId] || 0) - 1);
+                }
+                if (this.likeDislikeMap[referenceId] !== false && newValue === false) {
+                    this.dislikeCountMap[referenceId] = (this.dislikeCountMap[referenceId] || 0) + 1;
+                    if (this.likeDislikeMap[referenceId] === true) this.likeCountMap[referenceId] = Math.max(0, (this.likeCountMap[referenceId] || 0) - 1);
+                }
+                this.likeDislikeMap[referenceId] = newValue;
+            });
         });
     }
 
@@ -356,17 +387,19 @@ export class SocialCard implements OnInit, AfterViewInit {
 
     submitComment(blog: any) {
         if (!this.newComment.trim()) return;
-        this.isSubmittingComment = true;
-        this.api.post('/posts/comments/', {
-            referenceId: blog.id,
-            relatedTo: 'post',
-            message: this.newComment
-        }).subscribe(() => {
-            this.commentsMap[blog.id] = [...(this.commentsMap[blog.id] || []), { message: this.newComment }];
-            this.isSubmittingComment = false;
-            this.closeCommentModal();
-        }, () => {
-            this.isSubmittingComment = false;
+        this.checkLoginOrPrompt(() => {
+            this.isSubmittingComment = true;
+            this.api.post('/posts/comments/', {
+                referenceId: blog.id,
+                relatedTo: 'post',
+                message: this.newComment
+            }).subscribe(() => {
+                this.commentsMap[blog.id] = [...(this.commentsMap[blog.id] || []), { message: this.newComment }];
+                this.isSubmittingComment = false;
+                this.closeCommentModal();
+            }, () => {
+                this.isSubmittingComment = false;
+            });
         });
     }
 

@@ -3,6 +3,7 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiHelperService } from '../api-helper.service';
+import { UserIdentityService } from '../user-identity.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -21,7 +22,17 @@ export class Sidebar implements OnInit {
 
   @Output() groupSelected = new EventEmitter<any>();
 
-  constructor(private api: ApiHelperService, private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    private api: ApiHelperService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private userIdentity: UserIdentityService
+  ) {
+    this.userIdentity.isLoggedIn.subscribe((status) => {
+      this.isLoggedIn = status;
+    });
+  }
+
   onGroupClick(group: any) {
     this.selectedGroup = group == 'general' ? null : group;
     // Navigation now handled by [routerLink] in template; only emit event on click

@@ -5,7 +5,6 @@
       <editor id="description" [init]="tinymceConfig" licenseKey="gpl" [formControl]="descriptionControl"></editor>
       <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-danger small">Description is required.</div>
     </div>
-
     <div class="row mb-3">
       <div class="col-6">
         <label for="language" class="form-label">Language <span class="text-danger">*</span></label>
@@ -28,7 +27,6 @@
         <div *ngIf="form.get('categories')?.invalid && form.get('categories')?.touched" class="text-danger small">At least one category is required.</div>
       </div>
     </div>
-
     <div class="mb-3">
       <label class="form-label">Media</label>
       <input type="file" class="form-control" (change)="onMediaChange($event)" accept="image/*,video/*" multiple />
@@ -50,7 +48,6 @@
         </div>
       </div>
     </div>
-
     <button type="submit" class="btn btn-primary mt-3 w-100">Submit</button>
   </form>
 </div>

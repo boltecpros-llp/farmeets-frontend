@@ -10,25 +10,26 @@
             </button>
             <input type="file" #fileInput accept="image/*" class="d-none" (change)="onProfilePicChange($event)">
           </div>
-          <form [formGroup]="profileForm">
+          <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
             <div class="row g-3">
               <div class="col-6">
                 <label class="form-label">First Name</label>
-                <input class="form-control" formControlName="firstName" [disabled]="true">
+                <input class="form-control" formControlName="firstName">
               </div>
               <div class="col-6">
                 <label class="form-label">Last Name</label>
-                <input class="form-control" formControlName="lastName" [disabled]="true">
+                <input class="form-control" formControlName="lastName">
               </div>
               <div class="col-12">
                 <label class="form-label">Email</label>
-                <input class="form-control" formControlName="email" [disabled]="true">
+                <input class="form-control" formControlName="email">
               </div>
               <div class="col-12">
-                <label class="form-label">Phone</label>
-                <input class="form-control" formControlName="phone" [disabled]="true">
+                <label class="form-label">Mobile</label>
+                <input class="form-control" formControlName="mobile" [disabled]="true">
               </div>
             </div>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Update Profile</button>
           </form>
         </div>
       </div>

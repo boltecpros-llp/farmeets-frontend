@@ -5,6 +5,7 @@ import { UserIdentityService } from '../../shared/user-identity.service';
 import { ApiHelperService } from '../../shared/api-helper.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-edit-profile',
@@ -70,19 +71,36 @@ export class EditProfileComponent implements OnInit {
     private userIdentity: UserIdentityService,
     private api: ApiHelperService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
     this.user = this.userIdentity.userDetails;
     this.profileForm = this.fb.group({
-      firstName: [{ value: this.user?.firstName || '', disabled: true }],
-      lastName: [{ value: this.user?.lastName || '', disabled: true }],
-      email: [{ value: this.user?.email || '', disabled: true }],
-      phone: [{ value: this.user?.phone || '', disabled: true }],
+      firstName: [this.user?.firstName || '', Validators.required],
+      lastName: [this.user?.lastName || '', Validators.required],
+      email: [this.user?.email || '', [Validators.required, Validators.email]],
+      mobile: [{ value: this.user?.mobile || '', disabled: true }],
     });
     this.languages = this.user?.languages || [];
     this.categories = this.user?.categories || [];
+  }
+
+  onUpdateProfile() {
+    if (this.profileForm.valid) {
+      const updateData = { ...this.profileForm.getRawValue() };
+      this.api.patch('/accounts/users/' + this.user.id + '/', updateData).subscribe({
+        next: (res: any) => {
+          this.userIdentity.setUserDetails(res);
+          this.user = res;
+          this.toast.show('Profile updated successfully!', 'success');
+        },
+        error: () => {
+          // handle error (optional)
+        }
+      });
+    }
   }
 
   onUpdatePreferences() {

@@ -28,10 +28,11 @@ export const routes: Routes = [
             { path: '', component: SocialCard },
             { path: 'blog/:blogId/:blogTitle', component: SocialCard },
             { path: 'category/:categoryId', component: BlogListing },
-            { path: ':categoryId/create-post', component: CreatePostComponent },
+            { path: ':categoryId/create-post', component: CreatePostComponent, canActivate: [AuthGuard] },
             {
                 path: 'company',
-                children: COMPANY_ROUTES
+                children: COMPANY_ROUTES,
+                canActivateChild: [AuthGuard]
             },
         ]
     },

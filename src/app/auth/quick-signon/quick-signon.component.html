@@ -1,78 +1,83 @@
-<h1 class="mb-2 fw-bold text-success">Welcome to Farmeets!</h1>
-<div class="mb-3 text-secondary">
-  <div class="fs-5">Connect, share, and grow with the farming community.</div>
-  <!-- <div class="mt-1">Sign up in seconds and join thousands of farmers and agri-enthusiasts.</div> -->
-</div>
-<form *ngIf="step === 1" [formGroup]="form" class="">
-  <ng-container *ngIf="!otpSent; else otpBlock">
+<div [ngClass]="{'modal-body': isModal}">
+  <h1 class="mb-2 fw-bold text-success">Welcome to Farmeets!</h1>
+  <div class="mb-3 text-secondary">
+    <div class="fs-5">Connect, share, and grow with the farming community.</div>
+    <!-- <div class="mt-1">Sign up in seconds and join thousands of farmers and agri-enthusiasts.</div> -->
+  </div>
+  <form *ngIf="step === 1" [formGroup]="form" class="">
+    <ng-container *ngIf="!otpSent; else otpBlock">
+      <div class="mb-3">
+        <label for="mobile" class="form-label">Mobile Number</label>
+        <input id="mobile" type="text" class="form-control" formControlName="mobile" maxlength="10"
+          placeholder="Enter mobile number" required />
+        <div *ngIf="form.get('mobile')?.touched && form.get('mobile')?.invalid" class="text-danger small">
+          Mobile number is required and must be valid.
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary w-100" (click)="sendOtp()"
+        [disabled]="form.get('mobile')?.invalid">Send OTP</button>
+    </ng-container>
+    <ng-template #otpBlock>
+      <div class="mb-3">
+        <label for="otp" class="form-label">OTP</label>
+        <input id="otp" type="text" class="form-control" formControlName="otp" maxlength="6" placeholder="Enter OTP"
+          required />
+      </div>
+      <button type="button" class="btn btn-success w-100 mt-2" (click)="verifyOtp()">Verify OTP</button>
+      <div class="mt-2 text-center">
+        <button type="button" class="btn btn-link" [disabled]="resendBlocked || resendTimer > 0" (click)="resendOtp()">
+          Resend OTP <span *ngIf="resendTimer > 0">({{ resendTimer }}s)</span>
+        </button>
+        <div *ngIf="resendBlocked" class="text-danger small">You have reached the maximum number of resend attempts.
+        </div>
+      </div>
+    </ng-template>
+  </form>
+  <form *ngIf="step === 2" [formGroup]="profileForm" class="card p-3 shadow-sm mt-4">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="firstName" class="form-label">First Name</label>
+        <input id="firstName" type="text" class="form-control" formControlName="firstName" placeholder="First Name"
+          required />
+        <div *ngIf="profileForm.get('firstName')?.touched && profileForm.get('firstName')?.errors"
+          class="text-danger small">
+          <div *ngIf="profileForm.get('firstName')?.errors?.['required']">First name is required</div>
+        </div>
+      </div>
+      <div class="col">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input id="lastName" type="text" class="form-control" formControlName="lastName" placeholder="Last Name"
+          required />
+        <div *ngIf="profileForm.get('lastName')?.touched && profileForm.get('lastName')?.errors"
+          class="text-danger small">
+          <div *ngIf="profileForm.get('lastName')?.errors?.['required']">Last name is required</div>
+        </div>
+      </div>
+    </div>
     <div class="mb-3">
-      <label for="mobile" class="form-label">Mobile Number</label>
-      <input id="mobile" type="text" class="form-control" formControlName="mobile" maxlength="10"
-        placeholder="Enter mobile number" required />
-      <div *ngIf="form.get('mobile')?.touched && form.get('mobile')?.invalid" class="text-danger small">
-        Mobile number is required and must be valid.
+      <label for="email" class="form-label">Email</label>
+      <input id="email" type="email" class="form-control" formControlName="email" placeholder="Email" required />
+      <div *ngIf="profileForm.get('email')?.touched && profileForm.get('email')?.errors" class="text-danger small">
+        <div *ngIf="profileForm.get('email')?.errors?.['required']">Email is required</div>
+        <div *ngIf="profileForm.get('email')?.errors?.['email']">Invalid email address</div>
       </div>
     </div>
-    <button type="button" class="btn btn-primary w-100" (click)="sendOtp()"
-      [disabled]="form.get('mobile')?.invalid">Send OTP</button>
-  </ng-container>
-  <ng-template #otpBlock>
-    <div class="mb-3">
-      <label for="otp" class="form-label">OTP</label>
-      <input id="otp" type="text" class="form-control" formControlName="otp" maxlength="6" placeholder="Enter OTP"
-        required />
+    <button type="button" class="btn btn-primary w-100" (click)="updateProfile()"
+      [disabled]="profileForm.invalid">Update
+      Profile</button>
+  </form>
+  <div class="mt-4">
+    <div class="alert alert-info py-2 px-3 d-inline-block mb-2" style="font-size:0.95rem;">
+      <i class="bi bi-shield-lock me-1"></i>
+      Your information is secure with us. We use advanced encryption and never share your data without consent.
     </div>
-    <button type="button" class="btn btn-success w-100 mt-2" (click)="verifyOtp()">Verify OTP</button>
-    <div class="mt-2 text-center">
-      <button type="button" class="btn btn-link" [disabled]="resendBlocked || resendTimer > 0" (click)="resendOtp()">
-        Resend OTP <span *ngIf="resendTimer > 0">({{ resendTimer }}s)</span>
-      </button>
-      <div *ngIf="resendBlocked" class="text-danger small">You have reached the maximum number of resend attempts.</div>
+    <div class="small text-muted mt-2">
+      By signing up, you agree to our
+      <a href="/terms" target="_blank">Terms &amp; Conditions</a> and
+      <a href="/privacy" target="_blank">Privacy Policy</a>.
+      <br>
+      <span class="d-block mt-1">We respect your privacy and are committed to protecting your personal
+        information.</span>
     </div>
-  </ng-template>
-</form>
-<form *ngIf="step === 2" [formGroup]="profileForm" class="card p-3 shadow-sm mt-4">
-  <div class="row mb-3">
-    <div class="col">
-      <label for="firstName" class="form-label">First Name</label>
-      <input id="firstName" type="text" class="form-control" formControlName="firstName" placeholder="First Name"
-        required />
-      <div *ngIf="profileForm.get('firstName')?.touched && profileForm.get('firstName')?.errors"
-        class="text-danger small">
-        <div *ngIf="profileForm.get('firstName')?.errors?.['required']">First name is required</div>
-      </div>
-    </div>
-    <div class="col">
-      <label for="lastName" class="form-label">Last Name</label>
-      <input id="lastName" type="text" class="form-control" formControlName="lastName" placeholder="Last Name"
-        required />
-      <div *ngIf="profileForm.get('lastName')?.touched && profileForm.get('lastName')?.errors"
-        class="text-danger small">
-        <div *ngIf="profileForm.get('lastName')?.errors?.['required']">Last name is required</div>
-      </div>
-    </div>
-  </div>
-  <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input id="email" type="email" class="form-control" formControlName="email" placeholder="Email" required />
-    <div *ngIf="profileForm.get('email')?.touched && profileForm.get('email')?.errors" class="text-danger small">
-      <div *ngIf="profileForm.get('email')?.errors?.['required']">Email is required</div>
-      <div *ngIf="profileForm.get('email')?.errors?.['email']">Invalid email address</div>
-    </div>
-  </div>
-  <button type="button" class="btn btn-primary w-100" (click)="updateProfile()" [disabled]="profileForm.invalid">Update
-    Profile</button>
-</form>
-<div class="mt-4">
-  <div class="alert alert-info py-2 px-3 d-inline-block mb-2" style="font-size:0.95rem;">
-    <i class="bi bi-shield-lock me-1"></i>
-    Your information is secure with us. We use advanced encryption and never share your data without consent.
-  </div>
-  <div class="small text-muted mt-2">
-    By signing up, you agree to our
-    <a href="/terms" target="_blank">Terms &amp; Conditions</a> and
-    <a href="/privacy" target="_blank">Privacy Policy</a>.
-    <br>
-    <span class="d-block mt-1">We respect your privacy and are committed to protecting your personal information.</span>
   </div>
 </div>

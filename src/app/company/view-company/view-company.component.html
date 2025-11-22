@@ -1,53 +1,121 @@
 <div class="container py-2">
-  <div *ngIf="company; else loading">
-    <div class="card mb-3">
-      <div class="ratio ratio-4x3 mb-3">
-        <img *ngIf="company.logo; else logoPlaceholder" [src]="company.logo" alt="Company Logo"
-          class="card-img-top object-fit-contain w-100 h-100" />
-        <ng-template #logoPlaceholder>
-          <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
-            <i class="bi bi-image fs-1"></i>
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'info'" (click)="setTab('info')">Information</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'members'" (click)="setTab('members')">Members</a>
+    </li>
+  </ul>
+  <div *ngIf="activeTab === 'info'">
+    <div *ngIf="company; else loading">
+      <div class="card mb-3">
+        <div class="ratio ratio-4x3 mb-3">
+          <img *ngIf="company.logo; else logoPlaceholder" [src]="company.logo" alt="Company Logo"
+            class="card-img-top object-fit-contain w-100 h-100" />
+          <ng-template #logoPlaceholder>
+            <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
+              <i class="bi bi-image fs-1"></i>
+            </div>
+          </ng-template>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ company.name }}</h3>
+          <div><strong>Type: </strong>{{ company.companyType }}</div>
+          <div><strong>Categories: </strong>
+            <span *ngIf="categoryNames; else noCat">{{ categoryNames }}</span>
+            <ng-template #noCat><span class="text-muted">None</span></ng-template>
           </div>
-        </ng-template>
-      </div>
-      <div class="card-body">
-        <h3 class="card-title">{{ company.name }}</h3>
-        <div><strong>Type: </strong>{{ company.companyType }}</div>
-        <div><strong>Categories: </strong>
-          <span *ngIf="categoryNames; else noCat">{{ categoryNames }}</span>
-          <ng-template #noCat><span class="text-muted">None</span></ng-template>
-        </div>
-        <div><strong>Languages: </strong>
-          <span *ngIf="languageNames; else noLang">{{ languageNames }}</span>
-          <ng-template #noLang><span class="text-muted">None</span></ng-template>
-        </div>
-        <div class="card-text" [innerHTML]="company.description"></div>
-
-        <div *ngIf="company.images?.length">
-          <strong>Images:</strong>
-          <div *ngIf="company.images.length > 1" class="row mb-3">
-            <div class="col-4 mb-2" *ngFor="let img of company.images">
-              <img [src]="img" alt="Company Image" class="img-fluid rounded w-100 h-100"
+          <div><strong>Languages: </strong>
+            <span *ngIf="languageNames; else noLang">{{ languageNames }}</span>
+            <ng-template #noLang><span class="text-muted">None</span></ng-template>
+          </div>
+          <div class="card-text" [innerHTML]="company.description"></div>
+          <div *ngIf="company.images?.length">
+            <strong>Images:</strong>
+            <div *ngIf="company.images.length > 1" class="row mb-3">
+              <div class="col-4 mb-2" *ngFor="let img of company.images">
+                <img [src]="img" alt="Company Image" class="img-fluid rounded w-100 h-100"
+                  style="object-fit:cover; aspect-ratio: 4/3;" />
+              </div>
+            </div>
+            <div *ngIf="company.images.length === 1" class="mb-3 text-center">
+              <img [src]="company.images[0]" alt="Company Image" class="img-fluid rounded"
                 style="object-fit:cover; aspect-ratio: 4/3;" />
             </div>
           </div>
-          <div *ngIf="company.images.length === 1" class="mb-3 text-center">
-            <img [src]="company.images[0]" alt="Company Image" class="img-fluid rounded"
-              style="object-fit:cover; aspect-ratio: 4/3;" />
-          </div>
-        </div>
-        <div *ngIf="company.videos?.length">
-          <strong>Videos:</strong>
-          <div class="row">
-            <div class="col-12 mb-2" *ngFor="let vid of company.videos">
-              <video [src]="vid" controls class="w-100" style="max-height:120px;"></video>
+          <div *ngIf="company.videos?.length">
+            <strong>Videos:</strong>
+            <div class="row">
+              <div class="col-12 mb-2" *ngFor="let vid of company.videos">
+                <video [src]="vid" controls class="w-100" style="max-height:120px;"></video>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <ng-template #loading>
+      <div class="text-muted">Loading company details...</div>
+    </ng-template>
   </div>
-  <ng-template #loading>
-    <div class="text-muted">Loading company details...</div>
+  <div *ngIf="activeTab === 'members'">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Members</h5>
+      <button class="btn btn-primary" (click)="openAddMemberModal()"><i class="bi bi-person-plus"></i> Add
+        Member</button>
+    </div>
+    <div *ngIf="members.length > 0; else noMembers">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let member of members">
+            <td>{{ member.user?.name || (member.user?.firstName + ' ' + member.user?.lastName) }}</td>
+            <td>{{ member.role?.name }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="removeMember(member.user?.id)"><i class="bi bi-trash"></i>
+                Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noMembers>
+      <div class="text-muted">No members found.</div>
+    </ng-template>
+  </div>
+
+  <ng-template #addMemberModal>
+    <div class="modal-header">
+      <h5 class="modal-title">Add Member</h5>
+      <button type="button" class="btn-close" (click)="modalService.dismissAll()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-3">
+        <label class="form-label">Select User</label>
+        <select class="form-select" [(ngModel)]="selectedUser">
+          <option [ngValue]="null">Select user</option>
+          <option *ngFor="let user of users" [ngValue]="user.id">{{ user.name || (user.firstName + ' ' + user.lastName)
+            }}</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Select Role</label>
+        <select class="form-select" [(ngModel)]="selectedRole">
+          <option [ngValue]="null">Select role</option>
+          <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.name }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modalService.dismissAll()">Cancel</button>
+      <button type="button" class="btn btn-primary" [disabled]="!selectedUser || !selectedRole"
+        (click)="addMember()">Add</button>
+    </div>
   </ng-template>
-</div>
