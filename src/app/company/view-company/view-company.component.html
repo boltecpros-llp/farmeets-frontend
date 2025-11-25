@@ -3,7 +3,7 @@
     <li class="nav-item">
       <a class="nav-link" [class.active]="activeTab === 'info'" (click)="setTab('info')">Information</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" *ngIf="company?.members?.length">
       <a class="nav-link" [class.active]="activeTab === 'members'" (click)="setTab('members')">Members</a>
     </li>
   </ul>
@@ -62,7 +62,7 @@
   <div *ngIf="activeTab === 'members'">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">Members</h5>
-      <button class="btn btn-primary" (click)="openAddMemberModal()"><i class="bi bi-person-plus"></i> Add
+      <button *ngIf="isCompanyAdmin" class="btn btn-primary" (click)="openAddMemberModal()"><i class="bi bi-person-plus"></i> Add
         Member</button>
     </div>
     <div *ngIf="members.length > 0; else noMembers">
@@ -76,10 +76,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let member of members">
-            <td>{{ member.user?.name || (member.user?.firstName + ' ' + member.user?.lastName) }}</td>
-            <td>{{ member.role?.name }}</td>
+            <td>{{ member?.name || (member?.firstName + ' ' + member?.lastName) }}</td>
+            <td>{{ member.roles }}</td>
             <td>
-              <button class="btn btn-danger btn-sm" (click)="removeMember(member.user?.id)"><i class="bi bi-trash"></i>
+              <button *ngIf="isCompanyAdmin && isNotSelfMember(member)" class="btn btn-danger btn-sm" (click)="removeMember(member?.id)"><i class="bi bi-trash"></i>
                 Remove</button>
             </td>
           </tr>
@@ -115,7 +115,9 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modalService.dismissAll()">Cancel</button>
-      <button type="button" class="btn btn-primary" [disabled]="!selectedUser || !selectedRole"
-        (click)="addMember()">Add</button>
+      <button type="button" class="btn btn-primary" [disabled]="!selectedUser || !selectedRole || isLoading" (click)="addMember()">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        Add
+      </button>
     </div>
   </ng-template>
