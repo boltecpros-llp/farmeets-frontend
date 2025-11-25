@@ -48,6 +48,10 @@
         </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3 w-100">Submit</button>
+    <div class="d-flex gap-2 mt-3">
+      <button *ngIf="!postId" type="submit" class="btn btn-primary flex-fill">Create Post</button>
+      <button *ngIf="postId && canEditOrDelete" type="submit" class="btn btn-success flex-fill">Update Post</button>
+      <!-- Delete button removed; should be in SocialCard component -->
+    </div>
   </form>
 </div>

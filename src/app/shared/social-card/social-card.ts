@@ -18,6 +18,28 @@ import { QuickSignonComponent } from '../../auth/quick-signon/quick-signon.compo
     styleUrls: ['./social-card.scss']
 })
 export class SocialCard implements OnInit, AfterViewInit {
+    // Returns true if logged-in user is post author
+    canEditOrDelete(blog: any): boolean {
+        const userId = this.userIdentity.getUserId();
+        return blog.author?.id && userId && blog.author.id === userId;
+    }
+
+    onEdit(blog: any) {
+        this.router.navigate([`/create-post/${blog.id}`]);
+    }
+
+    onDelete(blog: any) {
+        if (!confirm('Are you sure you want to delete this post?')) return;
+        this.api.delete(`/posts/posts/${blog.id}/`).subscribe({
+            next: () => {
+                this.toast.show('Post deleted!', 'success');
+                this.fetchBlogs(true);
+            },
+            error: () => {
+                this.toast.show('Failed to delete post', 'error');
+            }
+        });
+    }
 
     @ViewChildren('postGraphicText') postGraphicTextRefs!: QueryList<ElementRef>;
     facebookShareUrl = '';

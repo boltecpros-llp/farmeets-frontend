@@ -30,6 +30,17 @@
               </strong>
               <span class="d-block small"><i class="bi bi-calendar me-1"></i> {{ blog.created_at | date }}</span>
             </div>
+            <div class="ms-auto" *ngIf="canEditOrDelete(blog)">
+              <div ngbDropdown placement="auto">
+                <button ngbDropdownToggle class="btn btn-link p-0 text-white text-decoration-none">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div ngbDropdownMenu class="shadow">
+                  <button ngbDropdownItem class="dropdown-item" type="button" (click)="onEdit(blog)"><i class="bi bi-pencil me-1"></i> Edit</button>
+                  <button ngbDropdownItem class="dropdown-item text-danger" type="button" (click)="onDelete(blog)"><i class="bi bi-trash me-1"></i> Delete</button>
+                </div>
+              </div>
+            </div>
             <!-- <span class="badge bg-warning ms-auto p-1 px-2">{{ blog.status }}</span> -->
           </div>
           <!-- Media & Link Preview -->
@@ -114,11 +125,6 @@
               <i class="bi bi-hand-thumbs-up me-1" [class.text-primary]="blog.likeDislike === true"></i> {{
               likeCountMap[blog.id] || blog.likes_count || 0 }}
             </button>
-            <!-- <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === false"
-              (click)="onLikeDislike(blog, false)">
-              <i class="bi bi-hand-thumbs-down me-1" [class.text-danger]="blog.likeDislike === false"></i> {{
-              dislikeCountMap[blog.id] || blog.dislikes_count || 0 }}
-            </button> -->
             <button class="btn btn-link p-0 text-white text-decoration-none" (click)="openCommentModal(blog)">
               <i class="bi bi-chat-left-text me-1"></i> {{ (commentsMap[blog.id]?.length || blog.comments_count || 0) }}
             </button>

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { ApiHelperService } from '../../shared/api-helper.service';
 import { HttpEventType, HttpClient } from '@angular/common/http';
@@ -22,18 +22,8 @@ import { ToastService } from '../../shared/toast/toast.service';
     styleUrls: ['./create-post.component.scss']
 })
 export class CreatePostComponent {
-        onCategoryToggle(catId: string, event: Event) {
-            const checked = (event.target as HTMLInputElement).checked;
-            const current = this.form.get('categories')?.value as string[];
-            let updated: string[];
-            if (checked) {
-                updated = [...current, catId];
-            } else {
-                updated = current.filter(id => id !== catId);
-            }
-            this.form.get('categories')?.setValue(updated);
-            this.form.get('categories')?.markAsTouched();
-        }
+    postId: string | null = null;
+    postAuthorId: string | null = null;
     categories: any[] = [];
     languages: any[] = [];
     form: FormGroup;
@@ -54,6 +44,7 @@ export class CreatePostComponent {
     constructor(
         private fb: FormBuilder,
         public router: Router,
+        private route: ActivatedRoute,
         private api: ApiHelperService,
         private http: HttpClient,
         private userIdentity: UserIdentityService,
@@ -67,6 +58,35 @@ export class CreatePostComponent {
             hideAuthor: [false],
             language: ['en']
         });
+
+        // Check for postId in route params
+        this.postId = this.route.snapshot.paramMap.get('postId');
+        if (this.postId) {
+            this.api.get(`/posts/posts/${this.postId}/`).subscribe({
+                next: (post: any) => {
+                    // Extract category IDs from post.categories
+                    const categoryIds = Array.isArray(post.categories)
+                        ? post.categories.map((cat: any) => cat.id)
+                        : [];
+                    // Extract language isoCode from post.language
+                    const languageIso = post.language?.isoCode || (typeof post.language === 'string' ? post.language : 'en');
+                    this.form.patchValue({
+                        description: post.description,
+                        categories: categoryIds,
+                        images: post.images || [],
+                        videos: post.videos || [],
+                        hideAuthor: post.hideAuthor || false,
+                        language: languageIso
+                    });
+                    this.imagePreviews = post.images || [];
+                    this.videoPreviews = post.videos || [];
+                    this.postAuthorId = post.author?.id || null;
+                },
+                error: err => {
+                    this.toast.show('Failed to load post for editing', 'error');
+                }
+            });
+        }
         // Load categories from user details
         const userDetails = this.userIdentity.userDetails;
         this.categories = Array.isArray(userDetails?.categories) ? userDetails.categories : [];
@@ -80,6 +100,19 @@ export class CreatePostComponent {
                 this.form.patchValue({ language: lang });
             }
         });
+    }
+
+    onCategoryToggle(catId: string, event: Event) {
+        const checked = (event.target as HTMLInputElement).checked;
+        const current = this.form.get('categories')?.value as string[];
+        let updated: string[];
+        if (checked) {
+            updated = [...current, catId];
+        } else {
+            updated = current.filter(id => id !== catId);
+        }
+        this.form.get('categories')?.setValue(updated);
+        this.form.get('categories')?.markAsTouched();
     }
 
     detectLanguage(text: string): string {
@@ -209,17 +242,40 @@ export class CreatePostComponent {
         formValue.link = match ? match[0] : '';
         console.log(formValue);
         if (this.form.valid) {
-            this.api.post('/posts/posts/', formValue).subscribe({
-                next: (res) => {
-                    this.api.errorPopup.show('Post created!');
-                    console.log(res);
-                    this.router.navigate(['/dashboard']);
-                },
-                error: (err) => {
-                    console.error(err);
-                }
-            });
+            if (this.postId) {
+                // Edit post (PATCH)
+                this.api.patch(`/posts/posts/${this.postId}/`, formValue).subscribe({
+                    next: (res) => {
+                        this.toast.show('Post updated!', 'success');
+                        this.router.navigate(['/dashboard']);
+                    },
+                    error: (err) => {
+                        this.toast.show('Failed to update post', 'error');
+                        console.error(err);
+                    }
+                });
+            } else {
+                // Create post
+                this.api.post('/posts/posts/', formValue).subscribe({
+                    next: (res) => {
+                        this.toast.show('Post created!', 'success');
+                        console.log(res);
+                        this.router.navigate(['/dashboard']);
+                    },
+                    error: (err) => {
+                        this.toast.show('Failed to create post', 'error');
+                        console.error(err);
+                    }
+                });
+            }
         }
+    }
+
+
+    // Returns true if logged-in user is post author
+    get canEditOrDelete(): boolean {
+        const userId = this.userIdentity.getUserId();
+        return !!this.postId && !!userId && this.postAuthorId === userId;
     }
 
     get descriptionControl() {
