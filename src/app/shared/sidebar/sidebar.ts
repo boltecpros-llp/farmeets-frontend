@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,14 +12,11 @@ import { UserIdentityService } from '../user-identity.service';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar implements OnInit {
+  @Input() isMobile: boolean = false;
   myGroups: any[] = [];
   exploreGroups: any[] = [];
-
   selectedGroup: any = null;
-
-  // Used for conditional rendering of 'My Companies' menu
   isLoggedIn = false; // TODO: Replace with real authentication check
-
   @Output() groupSelected = new EventEmitter<any>();
 
   constructor(

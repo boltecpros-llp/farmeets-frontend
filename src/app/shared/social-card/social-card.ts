@@ -133,6 +133,8 @@ export class SocialCard implements OnInit, AfterViewInit {
         if (ref && ref.nativeElement) {
             const el = ref.nativeElement as HTMLElement;
             const rect = el.getBoundingClientRect();
+            // Mobile bottom tab height (should match .sidebar-mobile or dashboard.scss value)
+            const mobileBottomTabHeight = 0;
             // Extract only text nodes, ignore tags
             let textLength = 0;
             let paragraphCount = 0;
@@ -155,7 +157,8 @@ export class SocialCard implements OnInit, AfterViewInit {
             const k = 1.2;
             const padding = 16 * 2; // left + right
             const usableWidth = Math.max(rect.width - padding, 1);
-            const usableHeight = Math.max(rect.height - padding - totalMargin, 1);
+            // Subtract mobile bottom tab height in mobile view
+            const usableHeight = Math.max(rect.height - padding - totalMargin - mobileBottomTabHeight, 1);
             let fontSize = (k * Math.sqrt((usableWidth * usableHeight) / Math.max(textLength, 1))) - 2;
             fontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize));
             this.renderer.setStyle(el, 'font-size', fontSize + 'px');
@@ -167,10 +170,8 @@ export class SocialCard implements OnInit, AfterViewInit {
             this.renderer.setStyle(el, 'max-height', '');
             setTimeout(() => {
                 if (fontSize === minFontSize && el.scrollHeight > el.offsetHeight) {
-                    // this.renderer.setStyle(el, 'overflow-y', 'auto');
-                    this.renderer.setStyle(el, 'max-height', rect.height + 'px');
+                    this.renderer.setStyle(el, 'max-height', (rect.height) + 'px');
                 } else {
-                    // this.renderer.setStyle(el, 'overflow-y', '');
                     this.renderer.setStyle(el, 'max-height', '');
                 }
             }, 0);

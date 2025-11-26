@@ -1,12 +1,19 @@
 <div class="container position-relative">
     <div class="row g-3 pt-3 align-items-start">
 
+        <!-- Desktop Sidebar -->
         <div class="col-md-3 d-none d-md-block sidebar sticky-top" style="top: 84px;">
             <app-sidebar (groupSelected)="onGroupSelected($event)"></app-sidebar>
         </div>
 
-        <div class="col-md-9 ms-sm-auto">
+        <!-- Main Content -->
+        <div class="col-md-9 ms-sm-auto main-content-area">
             <router-outlet></router-outlet>
+        </div>
+
+        <!-- Mobile Bottom Sidebar -->
+        <div class="d-md-none fixed-bottom w-100 bg-white border-top shadow-sm mobile-bottom-sidebar">
+            <app-sidebar (groupSelected)="onGroupSelected($event)" [isMobile]="true"></app-sidebar>
         </div>
     </div>
 </div>

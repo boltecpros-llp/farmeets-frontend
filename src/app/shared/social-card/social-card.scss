@@ -63,9 +63,16 @@
 
 // Copy of blog-listing.scss. Adjust styles for social-card if needed.
 
+// Default desktop values
 :host {
   --header-height: 85px;
   --bottom-nav-height: 0px;
+}
+
+@media (max-width: 767.98px) {
+  :host {
+    --bottom-nav-height: 80px;
+  }
 }
 
 .social-card-container {

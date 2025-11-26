@@ -5,15 +5,17 @@
   <div class="row g-3">
     <div class="col-md-6 col-lg-4" *ngFor="let company of companies">
       <div class="card h-100">
-        <img *ngIf="company.logo" [src]="company.logo" class="card-img-top" style="object-fit:cover;max-height:120px;">
-          <div style="aspect-ratio: 4/3; width: 100%; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-            <img *ngIf="company.logo; else placeholder" [src]="company.logo" alt="Company Logo" style="width: 100%; height: 100%; object-fit: contain;" />
-              <ng-template #placeholder>
-                <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
-                  <i class="bi bi-image fs-1"></i>
-                </div>
-              </ng-template>
-          </div>
+        <div class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center w-100">
+          <img *ngIf="company.logo; else placeholder"
+            [src]="company.logo"
+            alt="Company Logo"
+            class="object-fit-contain" />
+          <ng-template #placeholder>
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-secondary">
+              <i class="bi bi-image fs-1"></i>
+            </div>
+          </ng-template>
+        </div>
         <div class="card-body">
           <h5 class="card-title">{{ company.name }}</h5>
           <a [routerLink]="['/company', company.id]" class="btn btn-primary btn-sm">View</a>

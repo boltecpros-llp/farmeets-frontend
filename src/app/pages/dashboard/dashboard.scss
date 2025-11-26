@@ -1,3 +1,10 @@
+@media (max-width: 767.98px) {
+    .main-content-area {
+        padding-bottom: 80px; // Increased to ensure all content is visible above bottom sidebar
+        min-height: calc(100vh - 64px);
+        box-sizing: border-box;
+    }
+}
 :host {
     display: block;
     background-image: url("/farm-bg.jpg");
