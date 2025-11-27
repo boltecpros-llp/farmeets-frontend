@@ -240,7 +240,7 @@ export class SocialCard implements OnInit, AfterViewInit {
                                 .join('-')
                                 .toLowerCase()
                             : '');
-                    const shareUrl = window.location.origin + `/blogs/${item.id}/${blogTitleSlug}`;
+                    const shareUrl = window.location.origin + `/blog/${item.id}/${blogTitleSlug}`;
                     const descriptionHtml = item.description || '';
                     const descriptionText = descriptionHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
                     return {
