@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserIdentityService } from '../../shared/user-identity.service';
 import { ApiHelperService } from '../../shared/api-helper.service';
@@ -7,7 +8,7 @@ import { ApiHelperService } from '../../shared/api-helper.service';
 @Component({
   selector: 'app-update-preference',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './update-preference.component.html',
   styleUrls: ['./update-preference.component.scss']
 })
@@ -47,6 +48,8 @@ export class UpdatePreferenceComponent {
   selectedCategories: any[] = [];
   languages: any[] = [];
   categories: any[] = [];
+  filteredCategories: any[] = [];
+  categorySearch: string = '';
   loadingLanguages = false;
   loadingCategories = false;
 
@@ -88,6 +91,7 @@ export class UpdatePreferenceComponent {
     this.api.get('/posts/categories/hierarchy/').subscribe({
       next: (res: any) => {
         this.categories = Array.isArray(res) ? res : (res?.results || []);
+        this.filteredCategories = [...this.categories];
         this.loadingCategories = false;
       },
       error: () => {
@@ -95,6 +99,40 @@ export class UpdatePreferenceComponent {
       }
     });
     this.step = 2;
+  }
+
+  onCategorySearchChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.categorySearch = input.value;
+    const term = this.categorySearch.trim().toLowerCase();
+    if (!term) {
+      this.filteredCategories = [...this.categories];
+      return;
+    }
+    this.filteredCategories = this.categories
+      .map(cat => {
+        const name = cat.names?.[this.selectedLanguages[0]?.isoCode] || cat.names?.['en'] || cat.name || '';
+        // Check parent match
+        const parentMatch = name.toLowerCase().includes(term);
+        // Check children match
+        let matchedChildren = [];
+        if (Array.isArray(cat.children)) {
+          matchedChildren = cat.children.filter((sub: any) => {
+            const subName = sub.names?.[this.selectedLanguages[0]?.isoCode] || sub.names?.['en'] || sub.name || '';
+            return subName.toLowerCase().includes(term);
+          });
+        }
+        if (parentMatch) {
+          // If parent matches, include all children
+          return { ...cat };
+        } else if (matchedChildren.length > 0) {
+          // If any children match, include parent with only matched children
+          return { ...cat, children: matchedChildren };
+        }
+        // No match
+        return null;
+      })
+      .filter(cat => !!cat);
   }
 
   selectCategory(category: any) {
