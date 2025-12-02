@@ -1,3 +1,4 @@
+// Removed stray route objects above imports
 import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { BlogDetails } from './shared/blog-details/blog-details';
@@ -28,15 +29,27 @@ export const routes: Routes = [
             { path: '', component: SocialCard },
             { path: 'blog/:blogId/:blogTitle', component: SocialCard },
             { path: 'category/:categoryId', component: BlogListing },
-                { path: ':categoryId/create-post', component: CreatePostComponent, canActivate: [AuthGuard] },
-                {
-                    path: 'create-post/:postId',
-                    loadComponent: () => import('./pages/create-post/create-post.component').then(m => m.CreatePostComponent)
-                },
+            { path: ':categoryId/create-post', component: CreatePostComponent, canActivate: [AuthGuard] },
+            {
+                path: 'create-post/:postId',
+                loadComponent: () => import('./pages/create-post/create-post.component').then(m => m.CreatePostComponent)
+            },
             {
                 path: 'company',
                 children: COMPANY_ROUTES,
                 canActivateChild: [AuthGuard]
+            },
+            {
+                path: 'child-safety-policy',
+                loadComponent: () => import('./pages/child-safety-policy/child-safety-policy.component').then(m => m.ChildSafetyPolicyComponent)
+            },
+            {
+                path: 'privacy-policy',
+                loadComponent: () => import('./pages/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+            },
+            {
+                path: 'terms-and-conditions',
+                loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component').then(m => m.TermsAndConditionsComponent)
             },
         ]
     },

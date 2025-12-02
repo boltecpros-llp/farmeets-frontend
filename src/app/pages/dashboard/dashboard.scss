@@ -5,6 +5,7 @@
         box-sizing: border-box;
     }
 }
+
 :host {
     display: block;
     background-image: url("/farm-bg.jpg");
@@ -21,4 +22,11 @@
     height: 100%;
     position: fixed;
     background-color: #ffffffc9;
+}
+
+.sidebar {
+    top: 84px;
+    @media (min-width: 768px) {
+        height: calc(100vh - 100px);
+    }
 }

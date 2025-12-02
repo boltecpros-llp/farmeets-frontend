@@ -106,18 +106,21 @@
               </div>
             </ng-container>
           </div>
-          <!-- Caption (only if image, video, or socialLink.image is present) -->
-          <ng-container
-            *ngIf="blog.images?.length || blog.image || blog.videos?.length || blog.video || blog.socialLink?.image">
+          <!-- Caption: show only if showCaption is true -->
+          <ng-container *ngIf="blog.showCaption">
             <div
               class="post-body p-3 position-absolute bottom-0 w-100 bg-dark bg-opacity-75 text-white caption expandable"
               (click)="toggleCaption($event)">
               <div class="extra-content">
                 <h5 class="m-1">{{ blog.title }}</h5>
-                <div class="m-0" [innerHTML]="blog.description"></div>
+                <div class="m-0" [innerHTML]="blog.captionText"></div>
               </div>
             </div>
           </ng-container>
+          <!-- Link URL at bottom: show only if showLinkUrl is true -->
+          <div *ngIf="blog.showLinkUrl && blog.linkUrl" class="post-link-url position-absolute bottom-0 end-0 p-2">
+            <a [href]="blog.linkUrl" target="_blank" class="text-decoration-underline small text-primary">{{ blog.linkUrl }}</a>
+          </div>
           <!-- Actions -->
           <div class="post-actions position-absolute d-flex flex-column gap-2 align-items-start">
             <button class="btn btn-link p-0 text-white text-decoration-none" [class.active]="blog.likeDislike === true"

@@ -1,4 +1,5 @@
 import { Component, OnDestroy, Optional } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +15,8 @@ import { NgbActiveModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bo
   styleUrls: ['./quick-signon.component.scss']
 })
 export class QuickSignonComponent implements OnDestroy {
+  referralCode: string | null = null;
+  referralLink: string = '';
   step = 1;
   form: FormGroup;
   profileForm: FormGroup;
@@ -33,13 +36,10 @@ export class QuickSignonComponent implements OnDestroy {
     private router: Router,
     private userIdentity: UserIdentityService,
     private api: ApiHelperService,
+    private route: ActivatedRoute,
     @Optional() private modal: NgbActiveModal
   ) {
-
-    console.log(this.modal)
-
     this.isModal = !!this.modal;
-
     this.form = this.fb.group({
       mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       otp: ['']
@@ -53,12 +53,25 @@ export class QuickSignonComponent implements OnDestroy {
     const storedRetry = sessionStorage.getItem('otpRetryCount');
     this.retryCount = storedRetry ? +storedRetry : 0;
     this.resendBlocked = this.retryCount >= this.maxRetries;
+
+    // Get referralCode from query params
+    this.route.queryParamMap.subscribe(params => {
+      this.referralCode = params.get('referralCode');
+      if (this.referralCode) {
+        this.referralLink = `/auth/quick-signon?referralCode=${this.referralCode}`;
+      }
+    });
   }
 
   sendOtp(): void {
     this.loading = true;
     const mobile = this.form.get('mobile')?.value;
-    this.api.post<any>('/accounts/users/otp/', { mobile }).subscribe({
+    const payload: any = { mobile };
+    let referralCodeQuery = '';
+    if (this.referralCode) {
+      referralCodeQuery = '?referralCode=' + this.referralCode;
+    }
+    this.api.post<any>('/accounts/users/otp/' + referralCodeQuery, payload).subscribe({
       next: () => {
         this.otpSent = true;
         this.loading = false;

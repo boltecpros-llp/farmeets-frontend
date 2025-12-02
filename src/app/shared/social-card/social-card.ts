@@ -69,7 +69,8 @@ export class SocialCard implements OnInit, AfterViewInit {
     blogs: any[] = [];
     total = 0;
     page = 1;
-    pageSize = 30;
+    pageSize = 10;
+    private guestPrompted = false;
     search = '';
     status: 'Active' | 'Inactive' | '' = 'Active';
     categoryId: string = '';
@@ -201,6 +202,20 @@ export class SocialCard implements OnInit, AfterViewInit {
     }
 
     fetchBlogs(reset: boolean = false) {
+        // Prevent guests from fetching more than 1 page
+        if (!this.userIdentity.isValidToken() && this.page > 1) {
+            if (!this.guestPrompted) {
+                this.guestPrompted = true;
+                const modalRef = this.modalService.open(QuickSignonComponent, {
+                    centered: true,
+                    backdrop: 'static'
+                });
+                modalRef.result.finally(() => {
+                    this.guestPrompted = false;
+                });
+            }
+            return;
+        }
         const params: any = {
             page: this.page,
             page_size: this.pageSize,
@@ -243,16 +258,39 @@ export class SocialCard implements OnInit, AfterViewInit {
                     const shareUrl = window.location.origin + `/blog/${item.id}/${blogTitleSlug}`;
                     const descriptionHtml = item.description || '';
                     const descriptionText = descriptionHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+                    // Use socialLink and link fields for preview and link URL
+                    const linkPreview = item.socialLink || null;
+                    const linkUrl = item.link || '';
+                    let showLinkUrl = true;
+                    let showCaption = true;
+                    let captionText = descriptionText;
+                    // If link preview is present, hide link URL from bottom
+                    if (linkPreview) {
+                        showLinkUrl = false;
+                    }
+                    // If link and description are same, don't show caption
+                    if (linkUrl && descriptionText && descriptionText.trim() === linkUrl.trim()) {
+                        showCaption = false;
+                    }
+                    // If caption/description has more content along with link, remove link from caption
+                    if (linkUrl && showCaption && descriptionText.includes(linkUrl)) {
+                        captionText = descriptionText.replace(linkUrl, '').replace(/\s+/g, ' ').trim();
+                    }
                     return {
                         ...item,
                         textStyle: randomStyle,
                         shareUrl,
                         socialUrls: {
                             facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-                            linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(descriptionText)}&summary=${encodeURIComponent(descriptionText)}`,
-                            whatsapp: `https://wa.me/?text=${encodeURIComponent(descriptionText + ' ' + shareUrl)}`,
-                            x: `https://x.com/intent/tweet?text=${encodeURIComponent(descriptionText + ' ' + shareUrl)}`
-                        }
+                            linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(captionText)}&summary=${encodeURIComponent(captionText)}`,
+                            whatsapp: `https://wa.me/?text=${encodeURIComponent(captionText + ' ' + shareUrl)}`,
+                            x: `https://x.com/intent/tweet?text=${encodeURIComponent(captionText + ' ' + shareUrl)}`
+                        },
+                        showLinkUrl,
+                        showCaption,
+                        captionText,
+                        linkPreview,
+                        linkUrl
                     };
                 });
 
@@ -428,5 +466,23 @@ export class SocialCard implements OnInit, AfterViewInit {
 
     encodeUrl(url: string): string {
         return encodeURIComponent(url);
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        if (this.isScrolling) return;
+        // Only trigger if there are more posts to load
+        if (this.blogs.length >= this.total) return;
+        // Find the second-to-last post card
+        if (this.postCards.length < 2) return;
+        const secondLastCard = this.postCards[this.postCards.length - 2];
+        if (!secondLastCard) return;
+        const rect = secondLastCard.getBoundingClientRect();
+        // If the second-to-last card is visible in the viewport
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            if (!this.userIdentity.isValidToken() && this.page > 1) return; // Guest block for page > 1
+            this.page++;
+            this.fetchBlogs(false);
+        }
     }
 }

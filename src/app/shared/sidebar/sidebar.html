@@ -19,8 +19,8 @@
         </a>
     </div>
 </div>
-<div class="sidebar-sticky pt-3 d-none d-md-block">
-    <div class="mb-4">
+<div class="sidebar-sticky pt-3 d-none d-md-flex flex-column h-100" style="min-height:0;">
+    <div class="mb-4 flex-shrink-0">
         <h5>Welcome</h5>
         <ul class="list-group mt-2">
             <li class="list-group-item">
@@ -28,12 +28,6 @@
                     <i class="bi bi-speedometer2 me-1"></i> Home
                 </a>
             </li>
-            <!-- <li class="list-group-item">
-                <a routerLink="./category/general" (click)="onGroupClick('general')"
-                    class="d-block py-1 text-decoration-none">
-                    <i class="bi bi-chat-dots me-1"></i> Discussions
-                </a>
-            </li> -->
             <li class="list-group-item">
                 <a routerLink="./general/create-post" (click)="onGroupClick('general')"
                     class="d-block py-1 text-decoration-none">
@@ -98,4 +92,23 @@
             </li>
         </ul>
     </div> -->
+    <div class="sidebar-bottom-links mt-auto flex-shrink-0">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a routerLink="./privacy-policy" class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-shield-lock me-1"></i> Privacy Policy
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a routerLink="./terms-and-conditions" class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-file-earmark-text me-1"></i> Terms & Conditions
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a routerLink="./child-safety-policy" class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-shield-check me-1"></i> Child Safety Policy
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>

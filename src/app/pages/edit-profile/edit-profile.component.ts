@@ -15,6 +15,7 @@ import { ToastService } from '../../shared/toast/toast.service';
   styleUrls: ['./edit-profile.component.scss']
 })
 export class EditProfileComponent implements OnInit {
+    referralUrl: string = '';
   profileForm!: FormGroup;
   languages: any[] = [];
   categories: any[] = [];
@@ -77,6 +78,9 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userIdentity.userDetails;
+    if (this.user?.referralCode) {
+      this.referralUrl = window.location.origin + '/auth/quick-signon?referralCode=' + this.user.referralCode;
+    }
     this.profileForm = this.fb.group({
       firstName: [this.user?.firstName || '', Validators.required],
       lastName: [this.user?.lastName || '', Validators.required],
@@ -85,6 +89,12 @@ export class EditProfileComponent implements OnInit {
     });
     this.languages = this.user?.languages || [];
     this.categories = this.user?.categories || [];
+  }
+
+  copyReferralUrl() {
+    if (this.referralUrl) {
+      navigator.clipboard.writeText(this.referralUrl);
+    }
   }
 
   onUpdateProfile() {
