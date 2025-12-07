@@ -7,6 +7,7 @@ import { AuthGuard } from '../auth/auth.guard';
 export const COMPANY_ROUTES: Routes = [
   { path: '', component: CompaniesComponent, canActivate: [AuthGuard] },
   { path: 'add', component: AddCompanyComponent, canActivate: [AuthGuard] },
+  { path: 'update-company/:id', component: AddCompanyComponent, canActivate: [AuthGuard] },
   {
     path: 'my-companies',
     component: CompaniesComponent,

@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ApiHelperService } from '../../shared/api-helper.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
@@ -17,7 +17,7 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
   templateUrl: './add-company.component.html',
   styleUrls: ['./add-company.component.scss']
 })
-export class AddCompanyComponent {
+export class AddCompanyComponent implements OnInit {
   imagePreviews: string[] = [];
   videoPreviews: string[] = [];
   uploadingImages = false;
@@ -36,7 +36,16 @@ export class AddCompanyComponent {
     toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | code',
     statusbar: false
   };
-  constructor(private fb: FormBuilder, private api: ApiHelperService, private router: Router, private http: HttpClient, private toast: ToastService) {
+  companyId: string | null = null;
+  isEditMode = false;
+  constructor(
+    private fb: FormBuilder,
+    private api: ApiHelperService,
+    private router: Router,
+    private http: HttpClient,
+    private toast: ToastService,
+    private route: ActivatedRoute
+  ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -58,6 +67,34 @@ export class AddCompanyComponent {
         this.languages = Array.isArray(data) ? data : [];
       },
       error: err => console.error(err)
+    });
+  }
+
+  ngOnInit() {
+    // Support both /add and /update-company/:id
+    this.route.paramMap.subscribe(params => {
+      this.companyId = params.get('id');
+      if (this.companyId) {
+        this.isEditMode = true;
+        this.api.get(`/accounts/company/${this.companyId}/`).subscribe({
+          next: (data: any) => {
+            this.form.patchValue({
+              name: data.name || '',
+              description: data.description || '',
+              logo: data.logo || '',
+              companyType: data.companyType || 'FPO',
+              category_ids: (data.categories || []).map((c: any) => c.id),
+              language_ids: (data.languages || []).map((l: any) => l.id),
+              images: data.images || [],
+              videos: data.videos || []
+            });
+            this.logoPreview = data.logo || '';
+            this.imagePreviews = data.images || [];
+            this.videoPreviews = data.videos || [];
+          },
+          error: err => this.toast.show('Failed to load company details', 'error')
+        });
+      }
     });
   }
 
@@ -198,10 +235,20 @@ export class AddCompanyComponent {
 
   onSubmit() {
     if (this.form.valid) {
-      this.api.post('/accounts/company/', this.form.value).subscribe({
-        next: () => this.router.navigate(['/companies']),
-        error: err => console.error(err)
-      });
+      if (this.isEditMode && this.companyId) {
+        this.api.patch(`/accounts/company/${this.companyId}/`, this.form.value).subscribe({
+          next: () => {
+            this.toast.show('Company updated successfully!', 'success');
+            this.router.navigate(['/companies']);
+          },
+          error: err => this.toast.show('Failed to update company', 'error')
+        });
+      } else {
+        this.api.post('/accounts/company/', this.form.value).subscribe({
+          next: () => this.router.navigate(['/companies']),
+          error: err => this.toast.show('Failed to add company', 'error')
+        });
+      }
     }
   }
 }

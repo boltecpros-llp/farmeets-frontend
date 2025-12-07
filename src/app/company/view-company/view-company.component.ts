@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiHelperService } from '../../shared/api-helper.service';
 import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../../shared/toast/toast.service';
@@ -9,17 +9,17 @@ import { ToastService } from '../../shared/toast/toast.service';
 @Component({
   selector: 'app-view-company',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgbModalModule],
+  imports: [CommonModule, FormsModule, NgbModalModule, RouterModule],
   templateUrl: './view-company.component.html',
   styleUrls: ['./view-company.component.scss']
 })
 export class ViewCompanyComponent implements OnInit {
   isLoading = false;
-    // Returns true if the given member is NOT the current user
-    isNotSelfMember(member: any): boolean {
-      const userId = localStorage.getItem('userId');
-      return member?.id !== userId;
-    }
+  // Returns true if the given member is NOT the current user
+  isNotSelfMember(member: any): boolean {
+    const userId = localStorage.getItem('userId');
+    return member?.id !== userId;
+  }
   company: any = null;
   members: any[] = [];
   roles: any[] = [];
@@ -34,7 +34,8 @@ export class ViewCompanyComponent implements OnInit {
     private route: ActivatedRoute,
     private api: ApiHelperService,
     public modalService: NgbModal,
-    private toast: ToastService
+    private toast: ToastService,
+    private router: Router
   ) { }
 
   ngOnInit() {
