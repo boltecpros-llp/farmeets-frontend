@@ -79,7 +79,7 @@ export class EditProfileComponent implements OnInit {
   ngOnInit() {
     this.user = this.userIdentity.userDetails;
     if (this.user?.referralCode) {
-      this.referralUrl = window.location.origin + '/auth/quick-signon?referralCode=' + this.user.referralCode;
+      this.referralUrl = window.location.origin + '/auth/quick-signon?referredBy=' + this.user.referralCode;
     }
     this.profileForm = this.fb.group({
       firstName: [this.user?.firstName || '', Validators.required],

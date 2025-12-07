@@ -15,7 +15,7 @@ import { NgbActiveModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bo
   styleUrls: ['./quick-signon.component.scss']
 })
 export class QuickSignonComponent implements OnDestroy {
-  referralCode: string | null = null;
+  referredBy: string | null = null;
   referralLink: string = '';
   step = 1;
   form: FormGroup;
@@ -54,11 +54,11 @@ export class QuickSignonComponent implements OnDestroy {
     this.retryCount = storedRetry ? +storedRetry : 0;
     this.resendBlocked = this.retryCount >= this.maxRetries;
 
-    // Get referralCode from query params
+    // Get referredBy from query params
     this.route.queryParamMap.subscribe(params => {
-      this.referralCode = params.get('referralCode');
-      if (this.referralCode) {
-        this.referralLink = `/auth/quick-signon?referralCode=${this.referralCode}`;
+      this.referredBy = params.get('referredBy');
+      if (this.referredBy) {
+        this.referralLink = `/auth/quick-signon?referredBy=${this.referredBy}`;
       }
     });
   }
@@ -67,11 +67,11 @@ export class QuickSignonComponent implements OnDestroy {
     this.loading = true;
     const mobile = this.form.get('mobile')?.value;
     const payload: any = { mobile };
-    let referralCodeQuery = '';
-    if (this.referralCode) {
-      referralCodeQuery = '?referralCode=' + this.referralCode;
+    let referredByQuery = '';
+    if (this.referredBy) {
+      referredByQuery = '?referredBy=' + this.referredBy;
     }
-    this.api.post<any>('/accounts/users/otp/' + referralCodeQuery, payload).subscribe({
+    this.api.post<any>('/accounts/users/otp/' + referredByQuery, payload).subscribe({
       next: () => {
         this.otpSent = true;
         this.loading = false;
