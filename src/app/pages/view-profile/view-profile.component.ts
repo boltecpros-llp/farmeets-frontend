@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { SocialCard } from '../../shared/social-card/social-card';
+import { ApiHelperService } from '../../shared/api-helper.service';
 
 @Component({
   selector: 'app-view-profile',
@@ -10,6 +11,7 @@ import { SocialCard } from '../../shared/social-card/social-card';
   templateUrl: './view-profile.component.html',
   styleUrls: ['./view-profile.component.scss']
 })
+
 export class ViewProfileComponent {
   userId: string | null = null;
   profile: any = null;
@@ -18,45 +20,48 @@ export class ViewProfileComponent {
   private page = 1;
   private pageSize = 30;
 
-  constructor(private route: ActivatedRoute) {
-    this.userId = this.route.snapshot.paramMap.get('userId');
+  constructor(private route: ActivatedRoute, private api: ApiHelperService) {
   }
-
+  
   ngOnInit() {
-    // TODO: Replace with real API calls
+    this.userId = this.route.snapshot.paramMap.get('userId');
     this.fetchProfile();
     this.fetchUserPosts();
   }
 
   fetchProfile() {
-    // TODO: Replace with real API call
-    this.profile = {
-      id: this.userId,
-      name: 'Sample User',
-      profilePicture: '',
-      bio: 'This is a sample bio.',
-      email: 'user@email.com',
-      mobile: '1234567890'
-    };
+    if (!this.userId) return;
+    this.api.get(`/accounts/users/${this.userId}/`).subscribe({
+      next: (profile: any) => {
+        this.profile = profile;
+      },
+      error: () => {
+        this.profile = null;
+      }
+    });
   }
 
-  fetchUserPosts() {
-    // TODO: Replace with real API call
-    // Simulate 35 posts for demo
-    const totalPosts = 35;
-    const allPosts = Array.from({length: totalPosts}, (_, i) => ({
-      id: i+1,
-      title: `Post ${i+1}`,
-      description: `Description for post ${i+1}`,
-      author: { id: this.userId, name: 'Sample User', profilePicture: '' },
-      images: [],
-      videos: [],
-      created_at: new Date(),
-    }));
-    const start = (this.page-1)*this.pageSize;
-    const end = start + this.pageSize;
-    this.userPosts = [...this.userPosts, ...allPosts.slice(start, end)];
-    this.hasMorePosts = end < totalPosts;
+  fetchUserPosts(reset: boolean = false) {
+    if (!this.userId) return;
+    const params: any = {
+      page: this.page,
+      page_size: this.pageSize,
+      authorId: this.userId
+    };
+    this.api.get<any>('/posts/posts/', { params }).subscribe({
+      next: (data: any) => {
+        const newPosts = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
+        if (reset) {
+          this.userPosts = newPosts;
+        } else {
+          this.userPosts = [...this.userPosts, ...newPosts];
+        }
+        this.hasMorePosts = (data?.count || newPosts.length) > this.userPosts.length;
+      },
+      error: () => {
+        if (reset) this.userPosts = [];
+      }
+    });
   }
 
   loadMorePosts() {

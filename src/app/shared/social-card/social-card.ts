@@ -113,7 +113,9 @@ export class SocialCard implements OnInit, AfterViewInit {
             this.pageSize = +(qp.get('page_size') || 30);
             this.search = qp.get('search') || '';
             this.status = (qp.get('status') as 'Active' | 'Inactive') || 'Active';
-            this.fetchBlogs(true);
+            if (!this.disableScroll) {
+                this.fetchBlogs(true);
+            }
         });
     }
 

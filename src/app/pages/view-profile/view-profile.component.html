@@ -24,7 +24,55 @@
     <div *ngIf="userPosts.length > 0; else noPosts">
       <div class="row g-3">
         <div class="col-12 col-md-6" *ngFor="let post of userPosts">
-          <app-social-card [blogs]="[post]" [disableScroll]="true"></app-social-card>
+          <div class="card h-100 shadow-sm post-details-card">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                  <i class="bi bi-person fs-4 text-secondary"></i>
+                </div>
+                <div>
+                  <strong>
+                    {{ post.author?.firstName }}{{ post.author?.lastName ? ' ' + post.author.lastName : '' }}
+                  </strong>
+                  <div class="small text-muted">{{ post.created_at | date:'medium' }}</div>
+                </div>
+              </div>
+              <div class="mb-2">
+                <span *ngFor="let cat of post.categories" class="badge bg-primary me-1">{{ cat.name }}</span>
+                <span *ngIf="post.language" class="badge bg-secondary">{{ post.language.name }}</span>
+              </div>
+              <!-- Show image or socialLink.image above description -->
+              <ng-container *ngIf="post.images?.length > 0">
+                <img [src]="post.images[0]" alt="post image" class="w-100 rounded mb-2" style="max-height:220px;object-fit:cover;">
+              </ng-container>
+              <ng-container *ngIf="post.images?.length === 0 && post.socialLink?.image">
+                <img [src]="post.socialLink.image" alt="link image" class="w-100 rounded mb-2" style="max-height:220px;object-fit:cover;">
+              </ng-container>
+              <!-- Link preview -->
+              <ng-container *ngIf="post.socialLink">
+                <div class="link-preview d-flex align-items-center gap-2 p-2 bg-white rounded shadow-sm mb-2" style="max-width:100%;">
+                  <img *ngIf="post.socialLink.image" [src]="post.socialLink.image" alt="link image" class="rounded" style="width:40px;height:40px;object-fit:cover;">
+                  <div class="flex-grow-1">
+                    <a [href]="post.socialLink.url" target="_blank" class="fw-bold text-primary text-truncate d-block" style="max-width:180px;">
+                      {{ post.socialLink.title }}
+                    </a>
+                    <div class="small text-muted text-truncate" style="max-width:180px;">{{ post.socialLink.description }}</div>
+                  </div>
+                  <a [href]="post.socialLink.url" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle" title="Open link">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  </a>
+                </div>
+              </ng-container>
+              <!-- Description, with link url removed if link preview is present -->
+              <div class="mb-2" [innerHTML]="post.socialLink ? (post.description?.replace(post.link, '')) : post.description"></div>
+              <div class="d-flex gap-3 mt-2">
+                <span><i class="bi bi-eye me-1"></i> {{ post.views_count }}</span>
+                <span><i class="bi bi-hand-thumbs-up me-1"></i> {{ post.likes_count }}</span>
+                <span><i class="bi bi-hand-thumbs-down me-1"></i> {{ post.dislikes_count }}</span>
+                <span><i class="bi bi-chat-left-text me-1"></i> {{ post.comments_count }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="d-flex justify-content-center mt-3" *ngIf="hasMorePosts">
