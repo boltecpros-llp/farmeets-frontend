@@ -71,19 +71,36 @@
       <button *ngIf="isCompanyAdmin" class="btn btn-primary" (click)="openAddMemberModal()"><i
           class="bi bi-person-plus"></i> Add
         Member</button>
+      <button *ngIf="isCompanyAdmin" class="btn btn-primary" [routerLink]="['/general/create-post']" [queryParams]="{companyId: company.id}"><i
+          class="bi bi-person-plus"></i> Add
+        Member</button>
     </div>
     <div *ngIf="members.length > 0; else noMembers">
       <table class="table table-bordered">
         <thead>
           <tr>
+            <th>Profile Picture</th>
             <th>Name</th>
+            <th>Mobile</th>
             <th>Role</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let member of members">
-            <td>{{ member?.name || (member?.firstName + ' ' + member?.lastName) }}</td>
+            <td>
+              <img *ngIf="member?.profileUrl; else noProfile" [src]="member.profileUrl" alt="Profile Picture"
+              class="img-thumbnail" style="width: 200px; height: auto; object-fit: cover;" />
+              <ng-template #noProfile>
+              <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 text-secondary" style="min-height:60px;">
+                <i class="bi bi-image fs-2"></i>
+              </div>
+              </ng-template>
+            </td>
+            <td>
+              {{ member?.name || (member?.firstName + ' ' + member?.lastName) }}
+            </td>
+            <td>{{ maskMobile(member.mobile) }}</td>
             <td>{{ member.roles }}</td>
             <td>
               <button *ngIf="isCompanyAdmin && isNotSelfMember(member)" class="btn btn-danger btn-sm"
@@ -109,9 +126,23 @@
         <label class="form-label">Select User</label>
         <select class="form-select" [(ngModel)]="selectedUser">
           <option [ngValue]="null">Select user</option>
-          <option *ngFor="let user of users" [ngValue]="user.id">{{ user.name || (user.firstName + ' ' + user.lastName)
-            }}</option>
-        </select>
+            <option *ngFor="let user of users" [ngValue]="user.id">
+            {{
+              user.name ||
+              (
+              user.firstName + ' ' + user.lastName +
+              (
+                user.mobile
+                ? ' (' +
+                  '+91 ' +
+                  user.mobile.slice(2, 4) + '****' + user.mobile.slice(-4) +
+                  ')'
+                : ''
+              )
+              )
+            }}
+            </option>
+          </select>
       </div>
       <div class="mb-3">
         <label class="form-label">Select Role</label>

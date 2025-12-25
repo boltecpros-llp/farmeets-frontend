@@ -9,6 +9,10 @@
             <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-chat-dots"></i></span>
             <span class="sidebar-mobile-name">Create Post</span>
         </a>
+        <a *ngIf="isLoggedIn" routerLink="./ai-farmer-generator" class="sidebar-mobile-item">
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-person-bounding-box"></i></span>
+            <span class="sidebar-mobile-name">AI Farmer Portrait</span>
+        </a>
         <a routerLink="./company/add" class="sidebar-mobile-item">
             <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-building-add"></i></span>
             <span class="sidebar-mobile-name">Add Company</span>
@@ -32,6 +36,11 @@
                 <a routerLink="./general/create-post" (click)="onGroupClick('general')"
                     class="d-block py-1 text-decoration-none">
                     <i class="bi bi-chat-dots me-1"></i> Create Post
+                </a>
+            </li>
+            <li *ngIf="isLoggedIn" class="list-group-item">
+                <a routerLink="./ai-farmer-generator" class="d-block py-1 text-decoration-none">
+                    <i class="bi bi-person-bounding-box me-1"></i> AI Farmer Portrait
                 </a>
             </li>
             <li class="list-group-item">

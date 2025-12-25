@@ -1,3 +1,4 @@
+import { Input } from '@angular/core';
 import { Component, OnInit, Renderer2, HostListener, ViewChildren, ElementRef, AfterViewInit, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,14 @@ import { QuickSignonComponent } from '../../auth/quick-signon/quick-signon.compo
     styleUrls: ['./social-card.scss']
 })
 export class SocialCard implements OnInit, AfterViewInit {
+    @Input() disableScroll = false;
+    @Input() blogs: any[] = [];
+    goToProfile(blog: any) {
+        const userId = blog.author?.id;
+        if (userId) {
+            this.router.navigate(['/view-profile', userId]);
+        }
+    }
     // Returns true if logged-in user is post author
     canEditOrDelete(blog: any): boolean {
         const userId = this.userIdentity.getUserId();
@@ -66,7 +75,6 @@ export class SocialCard implements OnInit, AfterViewInit {
     private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') {
         this.toast.show(message, type);
     }
-    blogs: any[] = [];
     total = 0;
     page = 1;
     pageSize = 10;
@@ -344,6 +352,7 @@ export class SocialCard implements OnInit, AfterViewInit {
 
     @HostListener('window:wheel', ['$event'])
     onWheel(e: WheelEvent) {
+        if (this.disableScroll) return;
         if (this.isScrolling) return;
         if (e.deltaY > 0) {
             if (this.isGraphicTextScrollPending()) {
@@ -359,11 +368,13 @@ export class SocialCard implements OnInit, AfterViewInit {
     touchStartY = 0;
     @HostListener('window:touchstart', ['$event'])
     onTouchStart(e: TouchEvent) {
+        if (this.disableScroll) return;
         if (e.touches.length > 1) return;
         this.touchStartY = e.touches[0].clientY;
     }
     @HostListener('window:touchend', ['$event'])
     onTouchEnd(e: TouchEvent) {
+        if (this.disableScroll) return;
         if (e.changedTouches.length > 1) return;
         const deltaY = this.touchStartY - e.changedTouches[0].clientY;
         if (Math.abs(deltaY) > 20) {

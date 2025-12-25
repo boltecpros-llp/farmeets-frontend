@@ -1,0 +1,101 @@
+<div class="card ai-farmer-card mb-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">AI Farmer Portrait Generator</h5>
+  </div>
+  <div class="card-body">
+    <div *ngIf="!generatedImageUrl()">
+      <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading()">
+        <ng-container *ngIf="step() === 1">
+          <div class="mb-3">
+            <label class="form-label">Upload Your Photo <span class="text-danger">*</span></label>
+            <div class="position-relative group cursor-pointer transition-all duration-200 rounded-3 border border-dashed border-secondary bg-light shadow-sm mb-3"
+              style="height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;">
+              <input class="d-none" accept="image/*" type="file" (change)="onPhotoChange($event)" #userPhotoInputEl>
+              <ng-container *ngIf="!userPhotoPreview">
+                <div class="mb-4 p-4 rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-lg cursor-pointer" style="transition:background 0.2s;" (click)="userPhotoInputEl.click()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                </div>
+                <h3 class="fs-4 fw-bold mb-1">Upload high-res image</h3>
+                <p class="text-muted mb-4" style="max-width:320px;">Drag and drop your file here, or click to browse. Supports PNG, JPG and WEBP.</p>
+              </ng-container>
+              <ng-container *ngIf="userPhotoPreview">
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                  <img [src]="userPhotoPreview" class="img-fluid rounded border mb-3" style="max-width:180px;max-height:180px;object-fit:cover;" />
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="userPhotoInputEl.value = ''; userPhotoInputEl.click()">Change</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" (click)="userPhotoPreview = null; form.patchValue({ userPhoto: null })">Remove</button>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary w-100" (click)="nextStep()" [disabled]="!form.get('userPhoto')?.valid">Next</button>
+        </ng-container>
+        <ng-container *ngIf="step() === 2">
+          <div class="mb-3">
+            <label class="form-label">Crop Type <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2">
+              <button type="button" *ngFor="let crop of cropTypes" class="btn btn-outline-secondary" [class.active]="form.value.cropType === crop.value" (click)="form.patchValue({ cropType: crop.value })">
+                <span class="fs-3">{{ crop.icon }}</span> {{ crop.label }}
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Outfit <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2">
+              <button type="button" *ngFor="let outfit of outfits" class="btn btn-outline-secondary" [class.active]="form.value.outfit === outfit.value" (click)="form.patchValue({ outfit: outfit.value })">
+                <span class="fs-3">{{ outfit.icon }}</span> {{ outfit.label }}
+              </button>
+            </div>
+            <div class="small text-muted mt-1" *ngIf="form.value.outfit">{{ outfitDesc }}</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gender <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2">
+              <button type="button" *ngFor="let gender of genders" class="btn btn-outline-secondary" [class.active]="form.value.gender === gender.value" (click)="form.patchValue({ gender: gender.value })">
+                <span class="fs-3">{{ gender.icon }}</span> {{ gender.label }}
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Photo Type <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" *ngFor="let pt of photoTypes" class="btn btn-outline-secondary" [class.active]="form.value.photoType === pt.value" (click)="form.patchValue({ photoType: pt.value })">
+                <span class="fs-3">{{ pt.icon }}</span> {{ pt.label }}
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Lighting <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" *ngFor="let l of lightings" class="btn btn-outline-secondary" [class.active]="form.value.lighting === l.value" (click)="form.patchValue({ lighting: l.value })">
+                <span class="fs-3">{{ l.icon }}</span> {{ l.label }}
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Surroundings</label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" *ngFor="let s of surroundings" class="btn btn-outline-secondary" [class.active]="form.value.surroundings.includes(s.value)" (click)="toggleSurrounding(s.value)">
+                <span class="fs-3">{{ s.icon }}</span> {{ s.label }}
+              </button>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+            <button type="submit" class="btn btn-success" [disabled]="!form.valid || loading()">Generate Image</button>
+          </div>
+        </ng-container>
+      </form>
+      <div *ngIf="loading()" class="text-center py-3">
+        <div class="spinner-border text-success" role="status"></div>
+        <div>Generating image...</div>
+      </div>
+    </div>
+    <div *ngIf="generatedImageUrl()" class="text-center py-3">
+      <img [src]="generatedImageUrl()" class="img-fluid rounded border" style="max-width:400px;max-height:400px;object-fit:cover;" />
+      <div class="mt-2">Your AI generated farmer portrait!</div>
+      <button class="btn btn-primary mt-3" (click)="goToCreatePost()">Create Post with this Image</button>
+    </div>
+  </div>
+</div>

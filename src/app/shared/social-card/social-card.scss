@@ -270,13 +270,20 @@
   font-size: 1.1rem;
 }
 
-.social-card-content {
-  font-size: 0.98rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
+/* .social-card-embedded {
+  max-height: 400px !important;
+  height: 400px;
+  min-height: 300px;
 
-.link-preview {
+  .post-graphic-text {
+    max-height: 400px !important;
+    height: 400px;
+    min-height: 300px;
+  }
+} */
+
+.social-card-content {
+
   position: absolute;
   top: 64px;
   left: 0;

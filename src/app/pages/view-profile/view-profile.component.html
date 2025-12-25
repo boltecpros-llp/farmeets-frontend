@@ -1,0 +1,38 @@
+<div class="view-profile-container d-flex flex-column align-items-center gap-4 p-3">
+  <!-- Profile Image Centered -->
+  <div class="profile-image-circle mb-3">
+    <img *ngIf="profile?.profilePicture" [src]="profile.profilePicture" [alt]="profile.name || profile.firstName" class="rounded-circle object-fit-cover" width="120" height="120">
+    <div *ngIf="!profile?.profilePicture" class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width:120px;height:120px;">
+      <i class="bi bi-person fs-1 text-secondary"></i>
+    </div>
+  </div>
+
+  <!-- Profile Details Card -->
+  <div class="card w-100 max-w-500 shadow">
+    <div class="card-body text-center">
+      <h4 class="card-title mb-1">{{ profile?.name || (profile?.firstName + (profile?.lastName ? ' ' + profile.lastName : '')) || 'GUEST' }}</h4>
+      <div class="mb-2 text-muted">{{ profile?.bio }}</div>
+      <div *ngIf="profile?.email" class="mb-1"><i class="bi bi-envelope me-1"></i> {{ profile.email }}</div>
+      <div *ngIf="profile?.mobile" class="mb-1"><i class="bi bi-phone me-1"></i> {{ profile.mobile }}</div>
+      <!-- Add more profile fields as needed -->
+    </div>
+  </div>
+
+  <!-- User's Social Posts Grid -->
+  <div class="w-100 mt-4">
+    <h5 class="mb-3">Social Posts</h5>
+    <div *ngIf="userPosts.length > 0; else noPosts">
+      <div class="row g-3">
+        <div class="col-12 col-md-6" *ngFor="let post of userPosts">
+          <app-social-card [blogs]="[post]" [disableScroll]="true"></app-social-card>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center mt-3" *ngIf="hasMorePosts">
+        <button class="btn btn-outline-primary" (click)="loadMorePosts()">Load More</button>
+      </div>
+    </div>
+    <ng-template #noPosts>
+      <div class="text-center text-muted py-4">No social posts found.</div>
+    </ng-template>
+  </div>
+</div>

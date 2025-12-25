@@ -3,22 +3,24 @@
   <div class="social-card-container">
     <div class="d-flex flex-column align-items-center justify-content-center w-100 gap-3">
       <div *ngFor="let blog of blogs" class="w-100 post-card">
-        <div class="card h-100 shadow overflow-hidden">
+        <div class="card h-100 shadow overflow-hidden" [ngClass]="{'social-card-embedded': disableScroll}">
           <!-- Header -->
           <div
             class="post-header d-flex align-items-center p-2 gap-2 position-absolute top-0 left-0 w-100 bg-dark bg-opacity-75 text-light">
             <div class="ratio ratio-1x1 rounded-circle overflow-hidden profile-image-wrapper"
-              *ngIf="blog.author?.profilePicture; else profilePlaceholder">
+              *ngIf="blog.author?.profilePicture; else profilePlaceholder"
+              (click)="goToProfile(blog)" style="cursor:pointer;">
               <img class="object-fit-cover" [src]="blog.author?.profilePicture" [alt]="blog.author?.name" width="40"
                 height="40">
             </div>
             <ng-template #profilePlaceholder>
               <div
-                class="ratio ratio-1x1 rounded-circle bg-light d-flex align-items-center justify-content-center profile-image-wrapper">
+                class="ratio ratio-1x1 rounded-circle bg-light d-flex align-items-center justify-content-center profile-image-wrapper"
+                (click)="goToProfile(blog)" style="cursor:pointer;">
                 <i class="bi bi-person fs-3 text-secondary text-center"></i>
               </div>
             </ng-template>
-            <div>
+            <div style="cursor:pointer;" (click)="goToProfile(blog)">
               <strong>
                 {{
                 blog.author?.name
@@ -45,7 +47,7 @@
           </div>
           <!-- Media & Link Preview -->
           <div
-            class="post-media h-100 position-relative d-flex align-items-end justify-content-center bg-dark flex-grow-1 social-card-media">
+            class="post-media h-100 position-relative d-flex align-items-end justify-content-center flex-wrap bg-dark flex-grow-1 social-card-media">
             <!-- Additional Link Preview (above media/caption, does not affect existing logic) -->
             <ng-container *ngIf="blog.socialLink">
               <div class="link-preview d-flex align-items-center gap-2 p-2 bg-white rounded shadow-sm mb-2">

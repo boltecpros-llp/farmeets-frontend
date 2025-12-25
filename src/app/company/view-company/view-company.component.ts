@@ -20,6 +20,13 @@ export class ViewCompanyComponent implements OnInit {
     const userId = localStorage.getItem('userId');
     return member?.id !== userId;
   }
+
+  maskMobile(mobile: string): string {
+    if (!mobile || mobile.length < 6) return '';
+    // Remove +91 if present
+    const num = mobile.startsWith('+91') ? mobile.slice(3) : mobile;
+    return num.slice(0, 2) + '****' + num.slice(-4);
+  }
   company: any = null;
   members: any[] = [];
   roles: any[] = [];

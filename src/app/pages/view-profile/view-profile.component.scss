@@ -1,0 +1,19 @@
+.view-profile-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.profile-image-circle {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.max-w-500 {
+  max-width: 500px;
+  margin: 0 auto;
+}

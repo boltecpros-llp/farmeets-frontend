@@ -50,13 +50,29 @@ export class CreatePostComponent {
         private userIdentity: UserIdentityService,
         private toast: ToastService
     ) {
+
         this.form = this.fb.group({
             description: ['', Validators.required],
             categories: [[], Validators.required],
             images: [[]],
             videos: [[]],
             hideAuthor: [false],
-            language: ['en']
+            language: ['en'],
+            company_id: ['']
+        });
+
+
+        // If image or companyId param is present in query, add to form
+        this.route.queryParams.subscribe(params => {
+            const imageUrl = params['image'];
+            const companyId = params['companyId'];
+            if (imageUrl) {
+                this.imagePreviews = [imageUrl];
+                this.form.patchValue({ images: [imageUrl] });
+            }
+            if (companyId) {
+                this.form.patchValue({ company_id: companyId });
+            }
         });
 
         // Check for postId in route params

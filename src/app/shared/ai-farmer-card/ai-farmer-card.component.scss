@@ -1,0 +1,17 @@
+.ai-farmer-card .btn.active {
+  border: 2px solid #198754;
+  background: #e6f4ea;
+}
+.ai-farmer-card .btn {
+  min-width: 80px;
+  min-height: 48px;
+  font-size: 1rem;
+  transition: background 0.2s, border 0.2s;
+}
+.ai-farmer-card .card-header {
+  background: linear-gradient(90deg, #198754 60%, #aee1c9 100%);
+}
+.ai-farmer-card .spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
