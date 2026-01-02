@@ -48,6 +48,14 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/ai-farmer-card/ai-farmer-card.component').then(m => m.AiFarmerCardComponent)
             },
             {
+                path: 'ai-avatar-history',
+                loadComponent: () => import('./pages/ai-avatar-history/ai-avatar-history.component').then(m => m.AiAvatarHistoryComponent)
+            },
+            {
+                path: 'points-referrals',
+                loadComponent: () => import('./pages/points-referrals/points-referrals.component').then(m => m.PointsReferralsComponent)
+            },
+            {
                 path: 'child-safety-policy',
                 loadComponent: () => import('./pages/child-safety-policy/child-safety-policy.component').then(m => m.ChildSafetyPolicyComponent)
             },
@@ -60,6 +68,15 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component').then(m => m.TermsAndConditionsComponent)
             },
         ]
+    },
+    // Short referral code route: /:referralCode (must be after all specific routes)
+    {
+        path: ':referralCode',
+        pathMatch: 'full',
+        resolve: {
+          // Dummy resolver to allow navigation
+        },
+        loadComponent: () => import('./shared/redirect-referral.component').then(m => m.RedirectReferralComponent)
     },
     {
         path: '**',

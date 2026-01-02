@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-ai-farmer-card',
@@ -49,6 +50,7 @@ export class AiFarmerCardComponent {
     { value: 'goats', label: 'Goats', icon: '🐐' },
     { value: 'hens', label: 'Hens', icon: '🐔' },
     { value: 'bullocks', label: 'Bullocks', icon: '🐂' },
+    { value: 'bullock_cart', label: 'Bullock Cart', icon: '🛒' },
     { value: 'tractor', label: 'Tractor', icon: '🚜' },
     { value: 'farmer_hut', label: 'Farmer Hut', icon: '🏚️' },
     { value: 'trees', label: 'Trees', icon: '🌳' },
@@ -57,7 +59,7 @@ export class AiFarmerCardComponent {
 
   userPhotoPreview: string | null = null;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.form = this.fb.group({
       userPhoto: [null, Validators.required],
       cropType: [this.cropTypes[0].value, Validators.required],
@@ -109,7 +111,6 @@ export class AiFarmerCardComponent {
   }
 
   async submit() {
-    // return this.generatedImageUrl.set("https://farmeets.s3.ap-south-1.amazonaws.com/user_ff4ff569-9074-4a6f-8388-1f72b515be68/posts/67d58ead-8bf1-453f-9a48-e630ec0941ca_avatar_1dfb9bac764d4f07a55ac869bb75e2f8.png");
     if (this.form.valid) {
       this.loading.set(true);
       const formData = new FormData();
@@ -122,21 +123,23 @@ export class AiFarmerCardComponent {
       formData.append('lighting', values.lighting || '');
       formData.append('surroundings', (values.surroundings && values.surroundings.length > 0) ? values.surroundings.join(',') : '');
 
+      let token = '';
       try {
-        const response = await fetch('https://app.farmeets.com/api/accounts/api/generate-avtar/', {
-          method: 'POST',
-          body: formData
+        token = localStorage.getItem('token') || '';
+      } catch {}
+      const headers = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
+
+      this.http.post<any>('https://app.farmeets.com/api/accounts/api/generate-avtar/', formData, { headers })
+        .subscribe({
+          next: (data) => {
+            this.generatedImageUrl.set(data.image || null);
+            this.loading.set(false);
+          },
+          error: () => {
+            this.generatedImageUrl.set(null);
+            this.loading.set(false);
+          }
         });
-        if (!response.ok) throw new Error('Failed to generate image');
-        const data = await response.json();
-        // Assuming the API returns { imageUrl: string }
-        this.generatedImageUrl.set(data.image || null);
-      } catch (err) {
-        this.generatedImageUrl.set(null);
-        // Optionally handle error (e.g., show toast)
-      } finally {
-        this.loading.set(false);
-      }
     }
   }
   goToCreatePost() {

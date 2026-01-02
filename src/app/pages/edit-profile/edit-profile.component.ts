@@ -15,7 +15,7 @@ import { ToastService } from '../../shared/toast/toast.service';
   styleUrls: ['./edit-profile.component.scss']
 })
 export class EditProfileComponent implements OnInit {
-    referralUrl: string = '';
+    // Removed referralUrl, points, and referral logic (now in points-referrals component)
   profileForm!: FormGroup;
   languages: any[] = [];
   categories: any[] = [];
@@ -78,9 +78,7 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userIdentity.userDetails;
-    if (this.user?.referralCode) {
-      this.referralUrl = window.location.origin + '/auth/quick-signon?referredBy=' + this.user.referralCode;
-    }
+    // Removed referralUrl setup (now in points-referrals component)
     this.profileForm = this.fb.group({
       firstName: [this.user?.firstName || '', Validators.required],
       lastName: [this.user?.lastName || '', Validators.required],
@@ -91,11 +89,7 @@ export class EditProfileComponent implements OnInit {
     this.categories = this.user?.categories || [];
   }
 
-  copyReferralUrl() {
-    if (this.referralUrl) {
-      navigator.clipboard.writeText(this.referralUrl);
-    }
-  }
+  // Removed copyReferralUrl (now in points-referrals component)
 
   onUpdateProfile() {
     if (this.profileForm.valid) {

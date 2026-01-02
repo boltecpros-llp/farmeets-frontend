@@ -272,6 +272,11 @@ export class CreatePostComponent {
                 });
             } else {
                 // Create post
+
+                if (!formValue.company_id) {
+                    delete formValue.company_id;
+                }
+
                 this.api.post('/posts/posts/', formValue).subscribe({
                     next: (res) => {
                         this.toast.show('Post created!', 'success');

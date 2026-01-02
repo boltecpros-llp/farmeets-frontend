@@ -51,23 +51,7 @@
           </ul>
         </div>
       </div>
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h5 class="mb-3">Important Details</h5>
-          <ul class="list-group mb-3">
-            <li class="list-group-item"><strong>Profile Status:</strong> {{ user?.profileSubscriptionStatus }}</li>
-            <li class="list-group-item"><strong>Referral Code:</strong> {{ user?.referralCode }}</li>
-            <li class="list-group-item"><strong>Points Earned:</strong> {{ user?.pointsEarned }}</li>
-          </ul>
-          <div *ngIf="user?.referralCode" class="mt-3">
-            <label class="form-label">Share your referral link:</label>
-            <div class="input-group">
-              <input class="form-control" [value]="referralUrl" readonly>
-              <button type="button" class="btn btn-outline-primary" (click)="copyReferralUrl()">Share</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Points, referral code, and referral link moved to Points & Referrals page -->
     </div>
   </div>
 </div>

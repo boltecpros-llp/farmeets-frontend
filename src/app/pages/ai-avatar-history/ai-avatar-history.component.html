@@ -1,0 +1,36 @@
+<div class="ai-avatar-history-container p-3">
+  <h3 class="mb-3">AI Avatar Images History</h3>
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="!loading && avatars.length === 0" class="text-center text-muted py-4">
+    No avatar images found.
+  </div>
+  <div class="row g-3" *ngIf="avatars.length > 0">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let avatar of avatars">
+      <div class="card h-100 shadow-sm">
+        <img [src]="avatar.image_url" class="card-img-top object-fit-cover" [alt]="avatar.photo_type" style="height:220px;">
+        <div class="card-body p-2">
+          <div class="small text-muted mb-1">{{ avatar.created_at | date:'medium' }}</div>
+          <div class="fw-bold">{{ avatar.photo_type }}</div>
+          <div class="small">Points used: {{ avatar.points_used }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav *ngIf="total > pageSize" class="mt-4 d-flex justify-content-center">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="page === 1">
+        <button class="page-link" (click)="goToPage(page-1)">&laquo;</button>
+      </li>
+      <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="page === (i+1)">
+        <button class="page-link" (click)="goToPage(i+1)">{{ i+1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="page === totalPages">
+        <button class="page-link" (click)="goToPage(page+1)">&raquo;</button>
+      </li>
+    </ul>
+  </nav>
+</div>

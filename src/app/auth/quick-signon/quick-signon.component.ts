@@ -56,7 +56,16 @@ export class QuickSignonComponent implements OnDestroy {
 
     // Get referredBy from query params
     this.route.queryParamMap.subscribe(params => {
-      this.referredBy = params.get('referredBy');
+      const paramReferral = params.get('referredBy');
+      const localReferral = localStorage.getItem('referredBy');
+      if (paramReferral) {
+        this.referredBy = paramReferral;
+        localStorage.setItem('referredBy', paramReferral);
+      } else if (localReferral) {
+        this.referredBy = localReferral;
+      } else {
+        this.referredBy = null;
+      }
       if (this.referredBy) {
         this.referralLink = `/auth/quick-signon?referredBy=${this.referredBy}`;
       }
@@ -67,9 +76,11 @@ export class QuickSignonComponent implements OnDestroy {
     this.loading = true;
     const mobile = this.form.get('mobile')?.value;
     const payload: any = { mobile };
+    // Always check localStorage and query param for referral code
+    let referredBy = this.referredBy || localStorage.getItem('referredBy');
     let referredByQuery = '';
-    if (this.referredBy) {
-      referredByQuery = '?referredBy=' + this.referredBy;
+    if (referredBy) {
+      referredByQuery = '?referredBy=' + referredBy;
     }
     this.api.post<any>('/accounts/users/otp/' + referredByQuery, payload).subscribe({
       next: () => {

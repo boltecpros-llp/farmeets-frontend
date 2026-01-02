@@ -1,0 +1,28 @@
+<div class="points-referrals-container p-3">
+  <h3 class="mb-3">Points & Referrals</h3>
+  <div class="card mb-3">
+    <div class="card-body d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <div>
+        <div class="fw-bold fs-5">Your Points</div>
+        <div class="display-6">{{ points ?? 0 }}</div>
+      </div>
+      <div class="mt-3 mt-md-0">
+        <div class="fw-bold fs-5">Referral Code</div>
+        <div class="h4 mb-2">{{ referralCode }}</div>
+        <div class="input-group">
+          <input type="text" class="form-control" [value]="referralLink" readonly>
+          <button class="btn btn-outline-secondary" (click)="copyReferralLink()"><i class="bi bi-clipboard"></i> Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mt-4">
+    <div class="card" style="max-width: 320px;">
+      <div class="card-body text-center">
+        <div class="fw-bold mb-2">Share via QR Code</div>
+        <canvas #qrCanvas width="180" height="180" class="mx-auto d-block border"></canvas>
+        <div class="small text-muted mt-2">Scan to join with your referral</div>
+      </div>
+    </div>
+  </div>
+</div>
