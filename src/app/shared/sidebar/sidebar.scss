@@ -12,11 +12,14 @@
 	.sidebar-mobile-list {
 		display: flex;
 		flex-direction: row;
-		justify-content: space-around;
+		justify-content: stretch;
+		align-items: stretch;
 		padding: 0.5rem 0;
 	}
 	.sidebar-mobile-item {
 		flex: 1 1 0;
+		min-width: 0;
+		max-width: 100%;
 		text-align: center;
 		cursor: pointer;
 		text-decoration: none;
@@ -29,6 +32,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		box-sizing: border-box;
 	}
 	.sidebar-mobile-icon {
 		font-size: 1.5rem;
@@ -43,8 +47,13 @@
 		margin-top: 0.1rem;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		white-space: nowrap;
+		white-space: normal;
 		max-width: 80px;
+		max-height: 2.3em;
+		/* allow up to 2 lines */
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
 	}
 }
 

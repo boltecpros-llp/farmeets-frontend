@@ -1,28 +1,33 @@
 <!-- Mobile Bottom Tab Bar -->
 <div class="sidebar-mobile d-md-none">
     <div class="sidebar-mobile-list">
-        <a routerLink="./" (click)="onGroupClick(null)" class="sidebar-mobile-item">
+        <!-- <a routerLink="./" (click)="onGroupClick(null)" class="sidebar-mobile-item">
             <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-speedometer2"></i></span>
             <span class="sidebar-mobile-name">Home</span>
-        </a>
+        </a> -->
         <a routerLink="./general/create-post" (click)="onGroupClick('general')" class="sidebar-mobile-item">
-            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-chat-dots"></i></span>
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i
+                    class="bi bi-chat-dots"></i></span>
             <span class="sidebar-mobile-name">Create Post</span>
         </a>
         <a *ngIf="isLoggedIn" routerLink="./ai-farmer-generator" class="sidebar-mobile-item">
-            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-person-bounding-box"></i></span>
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i
+                    class="bi bi-person-bounding-box"></i></span>
             <span class="sidebar-mobile-name">AI Farmer Portrait</span>
         </a>
         <a *ngIf="isLoggedIn" routerLink="./ai-avatar-history" class="sidebar-mobile-item">
-            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-images"></i></span>
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i
+                    class="bi bi-images"></i></span>
             <span class="sidebar-mobile-name">AI Avatar History</span>
         </a>
-        <a routerLink="./company/add" class="sidebar-mobile-item">
-            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-building-add"></i></span>
+        <!-- <a routerLink="./company/add" class="sidebar-mobile-item">
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i
+                    class="bi bi-building-add"></i></span>
             <span class="sidebar-mobile-name">Add Company</span>
-        </a>
+        </a> -->
         <a *ngIf="isLoggedIn" routerLink="./company" class="sidebar-mobile-item">
-            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i class="bi bi-buildings"></i></span>
+            <span class="sidebar-mobile-icon d-flex justify-content-center align-items-center"><i
+                    class="bi bi-buildings"></i></span>
             <span class="sidebar-mobile-name">My Companies</span>
         </a>
     </div>
