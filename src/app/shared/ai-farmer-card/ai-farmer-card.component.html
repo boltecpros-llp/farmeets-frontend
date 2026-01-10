@@ -92,10 +92,21 @@
         <div>Generating image...</div>
       </div>
     </div>
-    <div *ngIf="generatedImageUrl()" class="text-center py-3">
-      <img [src]="generatedImageUrl()" class="img-fluid rounded border" style="max-width:400px;max-height:400px;object-fit:cover;" />
+    <div *ngIf="generatedImageUrl() as imgUrl" class="text-center py-3">
+      <img [src]="imgUrl" class="img-fluid rounded border" style="max-width:400px;max-height:400px;object-fit:cover;cursor:pointer;" (click)="openPreview(imgUrl, 'AI generated farmer portrait')" />
       <div class="mt-2">Your AI generated farmer portrait!</div>
-      <button class="btn btn-primary mt-3" (click)="goToCreatePost()">Create Post with this Image</button>
+      <div class="d-flex justify-content-center gap-2 mt-2">
+        <button class="btn btn-primary" (click)="goToCreatePost()">Create Post with this Image</button>
+        <button class="btn btn-outline-success" type="button" (click)="downloadGeneratedImage()">Download Image</button>
+      </div>
+    </div>
+
+    <!-- Modal Preview -->
+    <div *ngIf="previewImageUrl()" class="ai-avatar-modal" (click)="closePreview()">
+      <div class="ai-avatar-modal-content" (click)="$event.stopPropagation()">
+        <img [src]="previewImageUrl()" [alt]="previewImageAlt()" class="img-fluid w-100 h-100 object-fit-contain" style="max-height:90vh; max-width:100vw; display:block; margin:auto; background:#222;">
+        <button type="button" class="btn btn-light ai-avatar-modal-close" (click)="closePreview()" aria-label="Close">&times;</button>
+      </div>
     </div>
   </div>
 </div>

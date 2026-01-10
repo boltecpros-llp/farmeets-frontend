@@ -1,3 +1,51 @@
+// Modal styles for image preview (shared with ai-avatar-history)
+.ai-avatar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.ai-avatar-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 8px;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+}
+
+.ai-avatar-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 2rem;
+  background: rgba(255,255,255,0.8);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  line-height: 36px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+}
+
+.ai-avatar-modal-close:hover {
+  background: #fff;
+}
 .ai-farmer-card .btn.active {
   border: 2px solid #198754;
   background: #e6f4ea;

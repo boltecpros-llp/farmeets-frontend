@@ -11,15 +11,43 @@
   <div class="row g-3" *ngIf="avatars.length > 0">
     <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let avatar of avatars">
       <div class="card h-100 shadow-sm">
-        <img [src]="avatar.image_url" class="card-img-top object-fit-cover" [alt]="avatar.photo_type" style="height:220px;">
+        <img [src]="avatar.image_url" class="card-img-top object-fit-cover" [alt]="avatar.photo_type"
+          style="height:220px; cursor:pointer;" (click)="openPreview(avatar.image_url, avatar.photo_type)">
         <div class="card-body p-2">
           <div class="small text-muted mb-1">{{ avatar.created_at | date:'medium' }}</div>
           <div class="fw-bold">{{ avatar.photo_type }}</div>
           <div class="small">Points used: {{ avatar.points_used }}</div>
+          <button type="button" class="btn btn-outline-success btn-sm mt-2 w-100" (click)="openImageInNewTab(avatar.image_url)">Download Image</button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal Preview -->
+  <div *ngIf="previewImageUrl()" class="ai-avatar-modal" (click)="closePreview()">
+    <div class="ai-avatar-modal-content" (click)="$event.stopPropagation()">
+      <img [src]="previewImageUrl()" [alt]="previewImageAlt()" class="img-fluid w-100 h-100 object-fit-contain"
+        style="max-height:90vh; max-width:100vw; display:block; margin:auto; background:#222;">
+      <button
+        type="button"
+        class="btn btn-outline-success position-absolute"
+        style="top: 16px; left: 16px; z-index: 3;"
+        (click)="openImageInNewTab(previewImageUrl())"
+      >
+        Download
+      </button>
+      <button
+        type="button"
+        class="btn btn-light position-absolute"
+        style="top: 16px; right: 16px; z-index: 3;"
+        (click)="closePreview()"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+    </div>
+  </div>
+
   <nav *ngIf="total > pageSize" class="mt-4 d-flex justify-content-center">
     <ul class="pagination">
       <li class="page-item" [class.disabled]="page === 1">

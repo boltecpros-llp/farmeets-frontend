@@ -25,4 +25,38 @@
       </div>
     </div>
   </div>
+
+  <!-- Referrals Table -->
+  <div class="w-100 mt-4">
+    <h5 class="mb-3">Referrals <span *ngIf="referralsCount">({{ referralsCount }})</span> <span *ngIf="referralsPoints" class="badge bg-success ms-2">Points: {{ referralsPoints }}</span></h5>
+    <div *ngIf="loading" class="text-center py-3">
+      <div class="spinner-border text-success" role="status"></div>
+      <div>Loading referrals...</div>
+    </div>
+    <div *ngIf="!loading && referrals.length > 0; else noReferrals">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>Joined At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ref of referrals; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ ref.firstName }} {{ ref.lastName }}</td>
+              <td>{{ ref.mobile }}</td>
+              <td>{{ ref.joinedAt | date:'medium' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <ng-template #noReferrals>
+      <div class="text-center text-muted py-3">No referrals found.</div>
+    </ng-template>
+  </div>
 </div>

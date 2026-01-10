@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { SocialCard } from '../../shared/social-card/social-card';
 import { ApiHelperService } from '../../shared/api-helper.service';
@@ -7,7 +8,7 @@ import { ApiHelperService } from '../../shared/api-helper.service';
 @Component({
   selector: 'app-view-profile',
   standalone: true,
-  imports: [CommonModule, SocialCard],
+  imports: [CommonModule, RouterModule],
   templateUrl: './view-profile.component.html',
   styleUrls: ['./view-profile.component.scss']
 })
@@ -21,9 +22,6 @@ export class ViewProfileComponent {
   private pageSize = 30;
 
   constructor(private route: ActivatedRoute, private api: ApiHelperService) {
-  }
-  
-  ngOnInit() {
     this.userId = this.route.snapshot.paramMap.get('userId');
     this.fetchProfile();
     this.fetchUserPosts();

@@ -59,6 +59,10 @@ export class AiFarmerCardComponent {
 
   userPhotoPreview: string | null = null;
 
+  // Modal preview state
+  previewImageUrl = signal<string | null>(null);
+  previewImageAlt = signal<string>('');
+
   constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.form = this.fb.group({
       userPhoto: [null, Validators.required],
@@ -69,6 +73,18 @@ export class AiFarmerCardComponent {
       lighting: [this.lightings[0].value, Validators.required],
       surroundings: [[]]
     });
+  }
+
+  openPreview(url: string, alt: string) {
+    this.previewImageUrl.set(url);
+    this.previewImageAlt.set(alt);
+    document.body.style.overflow = 'hidden';
+  }
+
+  closePreview() {
+    this.previewImageUrl.set(null);
+    this.previewImageAlt.set('');
+    document.body.style.overflow = '';
   }
 
   get outfitDesc(): string {
@@ -145,6 +161,25 @@ export class AiFarmerCardComponent {
   goToCreatePost() {
     if (this.generatedImageUrl()) {
       this.router.navigate(['/general/create-post'], { queryParams: { image: this.generatedImageUrl() } });
+    }
+  }
+  async downloadGeneratedImage() {
+    const url = this.generatedImageUrl();
+    if (!url) return;
+    try {
+      const response = await fetch(url, { mode: 'cors' });
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'ai-farmer-portrait.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      window.open(url, '_blank');
     }
   }
   // End of class
