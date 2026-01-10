@@ -263,7 +263,7 @@ export class CreatePostComponent {
                 this.api.patch(`/posts/posts/${this.postId}/`, formValue).subscribe({
                     next: (res) => {
                         this.toast.show('Post updated!', 'success');
-                        this.router.navigate(['/dashboard']);
+                        this.router.navigate(['/']);
                     },
                     error: (err) => {
                         this.toast.show('Failed to update post', 'error');
@@ -281,7 +281,7 @@ export class CreatePostComponent {
                     next: (res) => {
                         this.toast.show('Post created!', 'success');
                         console.log(res);
-                        this.router.navigate(['/dashboard']);
+                        this.router.navigate(['/']);
                     },
                     error: (err) => {
                         this.toast.show('Failed to create post', 'error');

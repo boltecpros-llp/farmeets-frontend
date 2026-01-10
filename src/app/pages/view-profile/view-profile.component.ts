@@ -22,9 +22,15 @@ export class ViewProfileComponent {
   private pageSize = 30;
 
   constructor(private route: ActivatedRoute, private api: ApiHelperService) {
-    this.userId = this.route.snapshot.paramMap.get('userId');
-    this.fetchProfile();
-    this.fetchUserPosts();
+    this.route.paramMap.subscribe(params => {
+      const newUserId = params.get('userId');
+      if (this.userId !== newUserId) {
+        this.userId = newUserId;
+        this.page = 1;
+        this.fetchProfile();
+        this.fetchUserPosts(true);
+      }
+    });
   }
 
   fetchProfile() {

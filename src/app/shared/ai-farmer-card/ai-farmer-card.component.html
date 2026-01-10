@@ -33,7 +33,7 @@
         </ng-container>
         <ng-container *ngIf="step() === 2">
           <div class="mb-3">
-            <label class="form-label">Crop Type <span class="text-danger">*</span></label>
+            <label class="form-label">Farm <span class="text-danger">*</span></label>
             <div class="d-flex gap-2">
               <button type="button" *ngFor="let crop of cropTypes" class="btn btn-outline-secondary" [class.active]="form.value.cropType === crop.value" (click)="form.patchValue({ cropType: crop.value })">
                 <span class="fs-3">{{ crop.icon }}</span> {{ crop.label }}

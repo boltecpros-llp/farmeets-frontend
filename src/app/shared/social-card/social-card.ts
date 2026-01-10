@@ -315,7 +315,7 @@ export class SocialCard implements OnInit, AfterViewInit {
                     this.dislikeCountMap[blog.id] = blog.dislikes_count || 0;
                     this.commentsMap[blog.id] = blog.comments || [];
                 });
-
+                console.log('Blogs fetched:', this.commentsMap);
             },
             error: () => {
                 if (reset) {
