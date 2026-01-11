@@ -104,16 +104,55 @@ export class UserIdentityService implements OnDestroy {
     this.isLoggedIn.next(false);
   }
 
+  /**
+   * Checks if the current token is valid. If expired and a refresh token exists, attempts to refresh.
+   * Returns true if token is valid or successfully refreshed, false otherwise.
+   */
   isValidToken(): boolean {
-    let token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const expiry = this.getTokenExpiry();
-        return (Math.floor((new Date).getTime() / 1000)) <= expiry;
-      } catch {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    try {
+      const expiry = this.getTokenExpiry();
+      const now = Math.floor((new Date).getTime() / 1000);
+      if (now <= expiry) {
+        return true;
+      } else {
+        // Try to refresh if refresh token exists
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          // Synchronous fallback: mark as invalid, but trigger refresh in background
+          this.refreshToken().catch(() => this.clearUserDetails());
+        }
         return false;
       }
-    } else {
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Calls the refresh token API and updates tokens if successful.
+   * Returns a Promise that resolves to true if refreshed, false otherwise.
+   */
+  async refreshToken(): Promise<boolean> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return false;
+    try {
+      const response: any = await this.apiHelper.post('/accounts/users/token/refresh/', { refresh: refreshToken }).toPromise();
+      if (response && (response.access || response.token)) {
+        // Update token and expiry
+        localStorage.setItem('token', (response.access || response.token).toString());
+        if (response.refresh) localStorage.setItem('refreshToken', response.refresh.toString());
+        if (response.userDetails) {
+          localStorage.setItem('userDetails', JSON.stringify(response.userDetails));
+          this._userDetails = response.userDetails;
+        }
+        this.isLoggedIn.next(true);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      this.clearUserDetails();
       return false;
     }
   }

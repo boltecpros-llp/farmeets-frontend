@@ -34,28 +34,28 @@
         <ng-container *ngIf="step() === 2">
           <div class="mb-3">
             <label class="form-label">Farm <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" *ngFor="let farm of farmTypes" class="btn btn-outline-secondary" [class.active]="form.value.farmType === farm.value" (click)="form.patchValue({ farmType: farm.value })">
+                <span class="fs-3">{{ farm.icon }}</span> {{ farm.label }}
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gender <span class="text-danger">*</span></label>
             <div class="d-flex gap-2">
-              <button type="button" *ngFor="let crop of cropTypes" class="btn btn-outline-secondary" [class.active]="form.value.cropType === crop.value" (click)="form.patchValue({ cropType: crop.value })">
-                <span class="fs-3">{{ crop.icon }}</span> {{ crop.label }}
+              <button type="button" *ngFor="let gender of genders" class="btn btn-outline-secondary" [class.active]="form.value.gender === gender.value" (click)="form.patchValue({ gender: gender.value, outfit: null })">
+                <span class="fs-3">{{ gender.icon }}</span> {{ gender.label }}
               </button>
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Outfit <span class="text-danger">*</span></label>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
               <button type="button" *ngFor="let outfit of outfits" class="btn btn-outline-secondary" [class.active]="form.value.outfit === outfit.value" (click)="form.patchValue({ outfit: outfit.value })">
-                <span class="fs-3">{{ outfit.icon }}</span> {{ outfit.label }}
+                {{ outfit.label }}
               </button>
             </div>
             <div class="small text-muted mt-1" *ngIf="form.value.outfit">{{ outfitDesc }}</div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Gender <span class="text-danger">*</span></label>
-            <div class="d-flex gap-2">
-              <button type="button" *ngFor="let gender of genders" class="btn btn-outline-secondary" [class.active]="form.value.gender === gender.value" (click)="form.patchValue({ gender: gender.value })">
-                <span class="fs-3">{{ gender.icon }}</span> {{ gender.label }}
-              </button>
-            </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Photo Type <span class="text-danger">*</span></label>

@@ -68,12 +68,11 @@
   <div *ngIf="activeTab === 'members'">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">Members</h5>
-      <button *ngIf="isCompanyAdmin" class="btn btn-primary" (click)="openAddMemberModal()"><i
+      <button *ngIf="isCompanyAdmin" class="btn btn-primary ms-auto" (click)="openAddMemberModal()"><i
           class="bi bi-person-plus"></i> Add
         Member</button>
-      <button *ngIf="isCompanyAdmin" class="btn btn-primary" [routerLink]="['/general/create-post']" [queryParams]="{companyId: company.id}"><i
-          class="bi bi-person-plus"></i> Add
-        Member</button>
+      <button *ngIf="isCompanyAdmin" class="btn btn-primary ms-2" [routerLink]="['/general/create-post']" [queryParams]="{companyId: company.id}"><i
+          class="bi bi-plus-circle"></i> Create Post</button>
     </div>
     <div *ngIf="members.length > 0; else noMembers">
       <table class="table table-bordered">
@@ -122,27 +121,15 @@
       <button type="button" class="btn-close" (click)="modalService.dismissAll()"></button>
     </div>
     <div class="modal-body">
-      <div class="mb-3">
-        <label class="form-label">Select User</label>
-        <select class="form-select" [(ngModel)]="selectedUser">
-          <option [ngValue]="null">Select user</option>
-            <option *ngFor="let user of users" [ngValue]="user.id">
-            {{
-              user.name ||
-              (
-              user.firstName + ' ' + user.lastName +
-              (
-                user.mobile
-                ? ' (' +
-                  '+91 ' +
-                  user.mobile.slice(2, 4) + '****' + user.mobile.slice(-4) +
-                  ')'
-                : ''
-              )
-              )
-            }}
-            </option>
-          </select>
+      <div class="mb-3 position-relative">
+        <label class="form-label">Search User</label>
+        <input type="text" class="form-control" [(ngModel)]="userSearch" (input)="onUserSearchChange()" placeholder="Type name or mobile number">
+        <div *ngIf="userSearch && filteredUsers.length > 0" class="autocomplete-dropdown position-absolute w-100 bg-white border rounded shadow-sm" style="z-index:10; max-height:200px; overflow-y:auto;">
+          <button type="button" class="dropdown-item text-start" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+            {{ user.name || (user.firstName + ' ' + user.lastName) }}
+            <span *ngIf="user.mobile" class="text-muted small"> ({{ user.mobile }})</span>
+          </button>
+        </div>
       </div>
       <div class="mb-3">
         <label class="form-label">Select Role</label>

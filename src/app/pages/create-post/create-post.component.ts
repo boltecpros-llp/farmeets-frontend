@@ -105,7 +105,14 @@ export class CreatePostComponent {
         }
         // Load categories from user details
         const userDetails = this.userIdentity.userDetails;
-        this.categories = Array.isArray(userDetails?.categories) ? userDetails.categories : [];
+        this.categories = Array.isArray(userDetails?.categories) ? [...userDetails.categories] : [];
+        // Sort categories alphabetically by name (in selected language or English fallback)
+        const lang = this.form.get('language')?.value || 'en';
+        this.categories.sort((a, b) => {
+            const nameA = (a.names?.[lang] || a.names?.['en'] || a.name || '').toLowerCase();
+            const nameB = (b.names?.[lang] || b.names?.['en'] || b.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
         this.languages = Array.isArray(userDetails?.languages) ? userDetails.languages : [];
         console.log(this.categories);
 

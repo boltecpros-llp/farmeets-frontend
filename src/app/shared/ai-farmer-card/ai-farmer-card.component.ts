@@ -16,17 +16,64 @@ export class AiFarmerCardComponent {
   generatedImageUrl = signal<string | null>(null);
   loading = signal(false);
 
-  cropTypes = [
-    { value: 'Banana', label: 'Banana', icon: '🍌' },
-    { value: 'Wheat', label: 'Wheat', icon: '🌾' }
-  ];
-  outfits = [
-    { value: 'maharashtrian', label: 'Traditional Maharashtrian', icon: '👳', desc: 'Cotton kurta, dhoti, pheta' }
+  farmTypes = [
+    { value: 'Banana', label: 'Banana Farm', icon: '🍌' },
+    { value: 'Wheat', label: 'Wheat Farm', icon: '🌾' },
+    { value: 'Sugarcane', label: 'Sugarcane Farm', icon: '🌱' },
+    { value: 'Rice', label: 'Rice Farm', icon: '🍚' },
+    { value: 'Cotton', label: 'Cotton Farm', icon: '🧺' },
+    { value: 'Vegetable', label: 'Vegetable Farm', icon: '🥦' },
+    { value: 'Fruit', label: 'Fruit Orchard', icon: '🍎' }
   ];
   genders = [
     { value: 'male', label: 'Male', icon: '♂️' },
     { value: 'female', label: 'Female', icon: '♀️' }
   ];
+  maleOutfits = [
+    { value: 'maharashtrian', label: 'Traditional Maharashtrian Farmer Attire', desc: 'Cotton kurta, dhoti, saffron or white pheta (turban); earthy tones for rustic look. (Maharashtra)' },
+    { value: 'sherwani', label: 'Sherwani', desc: 'Long embroidered coat-like garment over kurta and churidar; paired with stole; ideal for weddings. (North India)' },
+    { value: 'kurta_pajama', label: 'Kurta Pajama', desc: 'Straight-cut kurta with pajama; cotton or silk; versatile for casual and festive wear. (Pan India)' },
+    { value: 'dhoti_kurta', label: 'Dhoti Kurta', desc: 'Wrapped dhoti with kurta; common in traditional ceremonies across India. (Pan India)' },
+    { value: 'pathani', label: 'Pathani Suit', desc: 'Long kurta with salwar; solid colors; regal North Indian look. (Punjab / North India)' },
+    { value: 'bandhgala', label: 'Bandhgala Suit', desc: 'Closed-neck jacket with trousers; formal and elegant for receptions. (Rajasthan / North India)' },
+    { value: 'jodhpuri', label: 'Jodhpuri Suit', desc: 'Structured jacket with churidar; royal ensemble in rich fabrics. (Rajasthan)' },
+    { value: 'lungi_shirt', label: 'Lungi with Shirt/Kurta', desc: 'Casual traditional wear in South India; cotton fabrics for comfort. (Tamil Nadu / Kerala)' },
+    { value: 'kashmiri_pheran', label: 'Kashmiri Pheran (Male)', desc: 'Loose woolen kurta with embroidery; worn in Kashmir for warmth and style. (Kashmir)' },
+    { value: 'veshti_shirt', label: 'South Indian Veshti & Shirt', desc: 'White or cream dhoti (veshti) with shirt; often paired with angavastram. (Tamil Nadu / Kerala)' },
+    { value: 'himachali_woolen', label: 'Himachali Woolen Attire', desc: 'Woolen kurta with churidar and colorful Himachali cap; ideal for cold regions. (Himachal Pradesh)' },
+    { value: 'nagaland_tribal', label: 'Nagaland Tribal Male Attire', desc: 'Colorful shawls, bead necklaces, and traditional headgear; symbolic of tribal heritage. (Nagaland)' },
+    { value: 'manipuri_traditional', label: 'Manipuri Male Traditional Dress', desc: 'Dhoti-style wrap with kurta and turban; simple and elegant. (Manipur)' },
+    { value: 'bengali_dhoti', label: 'Bengali Dhoti & Kurta', desc: 'White dhoti with silk kurta; often paired with uttariya (shawl). (West Bengal)' },
+    { value: 'odisha_sambalpuri', label: 'Odisha Sambalpuri Dhoti Kurta', desc: 'Handwoven ikat dhoti with kurta; rich cultural heritage. (Odisha)' },
+    { value: 'mizo_traditional', label: 'Mizo Male Traditional Attire', desc: 'Puan (striped wrap cloth) with shirt; worn during cultural events. (Mizoram)' },
+    { value: 'tripuri_attire', label: 'Tripuri Male Attire', desc: 'Rignai-style wrap for men with kurta; vibrant tribal patterns. (Tripura)' },
+    { value: 'bhutia_dress', label: 'Bhutia Male Dress (Sikkim)', desc: 'Kho (long robe) tied at the waist with a belt; paired with silk shirt. (Sikkim)' }
+  ];
+  femaleOutfits = [
+    { value: 'nauvari', label: 'Maharashtrian Nauvari Saree', desc: 'Nine-yard saree draped in dhoti style; paired with nath and green bangles; vibrant colors like green and red.' },
+    { value: 'banarasi', label: 'Banarasi Saree', desc: 'Luxurious silk saree with gold zari work; ideal for weddings and festive occasions.' },
+    { value: 'kanjeevaram', label: 'Kanjeevaram Saree', desc: 'South Indian silk saree with bold borders and contrasting colors; traditional and elegant.' },
+    { value: 'lehenga', label: 'Lehenga Choli', desc: 'Flared skirt with fitted blouse and dupatta; heavily embroidered for weddings.' },
+    { value: 'anarkali', label: 'Anarkali Suit', desc: 'Flowing frock-style kurta with churidar and dupatta; graceful and festive.' },
+    { value: 'ghagra_choli', label: 'Ghagra Choli', desc: 'Traditional Rajasthani attire with mirror work and vibrant colors; paired with odhani.' },
+    { value: 'kasavu', label: 'Kerala Kasavu Saree', desc: 'White saree with golden border; simple yet elegant for Onam and weddings.' },
+    { value: 'punjabi_suit', label: 'Punjabi Suit', desc: 'Bright colors with phulkari dupatta; comfortable and stylish.' },
+    { value: 'chaniya_choli', label: 'Gujarati Chaniya Choli', desc: 'Mirror work and vibrant hues; worn during Navratri and festive occasions.' },
+    { value: 'mekhela_chador', label: 'Assamese Mekhela Chador', desc: 'Elegant silk attire with traditional motifs; worn during Bihu and weddings.' },
+    { value: 'kashmiri_pheran_female', label: 'Kashmiri Pheran (Female)', desc: 'Woolen dress with intricate embroidery; paired with scarf for warmth.' },
+    { value: 'half_saree', label: 'South Indian Half-Saree (Langa Voni)', desc: 'Three-piece attire with skirt, blouse, and dupatta; worn by young women.' },
+    { value: 'himachali_traditional', label: 'Himachali Traditional Dress', desc: 'Woolen attire with colorful caps; vibrant patterns for cold regions.' },
+    { value: 'nagaland_tribal_female', label: 'Nagaland Tribal Attire', desc: 'Bright shawls, beadwork, and traditional ornaments; symbolic of tribal heritage.' },
+    { value: 'phanek_innaphi', label: 'Manipuri Phanek & Innaphi', desc: 'Wrap-around skirt with scarf; elegant and simple for cultural events.' },
+    { value: 'bengali_tant', label: 'Bengali Tant Saree', desc: 'Lightweight cotton saree with red borders; ideal for daily wear and festivals.' },
+    { value: 'odisha_sambalpuri_female', label: 'Odisha Sambalpuri Saree', desc: 'Handwoven saree with ikat patterns; rich cultural heritage.' },
+    { value: 'puan', label: 'Mizo Puanchei', desc: 'Colorful handwoven wrap skirt; worn during traditional dances.' },
+    { value: 'rignai_risa', label: 'Tripuri Rignai & Risa', desc: 'Traditional wrap skirt and scarf; vibrant tribal patterns.' },
+    { value: 'bhutia_dress_female', label: 'Bhutia Dress (Sikkim)', desc: 'Kho (long robe) tied at the waist with a belt; paired with silk blouse.' }
+  ];
+  get outfits() {
+    return this.form?.value?.gender === 'female' ? this.femaleOutfits : this.maleOutfits;
+  }
   photoTypes = [
     { value: 'portrait', label: 'Portrait', icon: '🧑' },
     { value: 'landscape', label: 'Landscape', icon: '🌄' },
@@ -66,8 +113,8 @@ export class AiFarmerCardComponent {
   constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.form = this.fb.group({
       userPhoto: [null, Validators.required],
-      cropType: [this.cropTypes[0].value, Validators.required],
-      outfit: [this.outfits[0].value, Validators.required],
+      farmType: [this.farmTypes[0].value, Validators.required],
+      outfit: [null, Validators.required],
       gender: [this.genders[0].value, Validators.required],
       photoType: [this.photoTypes[0].value, Validators.required],
       lighting: [this.lightings[0].value, Validators.required],
@@ -132,7 +179,7 @@ export class AiFarmerCardComponent {
       const formData = new FormData();
       const values = this.form.value;
       formData.append('userPhoto', values.userPhoto);
-      formData.append('cropType', values.cropType);
+      formData.append('farmType', values.farmType);
       formData.append('outfit', values.outfit);
       formData.append('gender', values.gender || '');
       formData.append('photoType', values.photoType || '');

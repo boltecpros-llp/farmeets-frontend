@@ -15,18 +15,6 @@ import { ToastService } from '../../shared/toast/toast.service';
 })
 export class ViewCompanyComponent implements OnInit {
   isLoading = false;
-  // Returns true if the given member is NOT the current user
-  isNotSelfMember(member: any): boolean {
-    const userId = localStorage.getItem('userId');
-    return member?.id !== userId;
-  }
-
-  maskMobile(mobile: string): string {
-    if (!mobile || mobile.length < 6) return '';
-    // Remove +91 if present
-    const num = mobile.startsWith('+91') ? mobile.slice(3) : mobile;
-    return num.slice(0, 2) + '****' + num.slice(-4);
-  }
   company: any = null;
   members: any[] = [];
   roles: any[] = [];
@@ -34,6 +22,8 @@ export class ViewCompanyComponent implements OnInit {
   activeTab: 'info' | 'members' = 'info';
   @ViewChild('addMemberModal') addMemberModalRef!: TemplateRef<any>;
   selectedUser: string | null = null;
+  userSearch: string = '';
+  filteredUsers: any[] = [];
   selectedRole: string | null = null;
   modalRef: NgbActiveModal | null = null;
 
@@ -72,6 +62,17 @@ export class ViewCompanyComponent implements OnInit {
     }
   }
 
+  isNotSelfMember(member: any): boolean {
+    const userId = localStorage.getItem('userId');
+    return member?.id !== userId;
+  }
+
+  maskMobile(mobile: string): string {
+    if (!mobile || mobile.length < 6) return '';
+    const num = mobile.startsWith('+91') ? mobile.slice(3) : mobile;
+    return num.slice(0, 2) + '****' + num.slice(-4);
+  }
+
   fetchMembers() {
     // Members are part of the current company object
     this.members = Array.isArray(this.company?.members) ? this.company.members : [];
@@ -83,9 +84,31 @@ export class ViewCompanyComponent implements OnInit {
       error: err => console.error(err)
     });
     this.api.get('/accounts/users/').subscribe({
-      next: (data: any) => this.users = Array.isArray(data) ? data : (data?.results || []),
+      next: (data: any) => {
+        this.users = Array.isArray(data) ? data : (data?.results || []);
+        this.filteredUsers = this.users;
+      },
       error: err => console.error(err)
     });
+  }
+
+  onUserSearchChange() {
+    const term = this.userSearch.trim().toLowerCase();
+    if (!term) {
+      this.filteredUsers = this.users;
+      return;
+    }
+    this.filteredUsers = this.users.filter((user: any) => {
+      const name = (user.name || (user.firstName + ' ' + user.lastName)).toLowerCase();
+      const mobile = user.mobile || '';
+      return name.includes(term) || mobile.includes(term);
+    });
+  }
+
+  selectUser(user: any) {
+    this.selectedUser = user.id;
+    this.userSearch = user.name || (user.firstName + ' ' + user.lastName);
+    this.filteredUsers = [];
   }
 
   setTab(tab: 'info' | 'members') {
@@ -107,10 +130,12 @@ export class ViewCompanyComponent implements OnInit {
     this.fetchRolesAndUsers();
     this.selectedUser = null;
     this.selectedRole = null;
+    this.userSearch = '';
+    this.filteredUsers = this.users;
     const modalRef = this.modalService.open(this.addMemberModalRef, { centered: true });
     modalRef.result.then((result: any) => {
       if (result === 'add' && this.selectedUser && this.selectedRole && this.company?.id) {
-
+        // handled in addMember()
       }
     }, () => { });
   }
@@ -125,7 +150,6 @@ export class ViewCompanyComponent implements OnInit {
         this.isLoading = false;
         this.fetchMembers();
         this.toast.show('Member added successfully!', 'success', 3000);
-        // Reset form for next entry, keep modal open
         this.selectedUser = null;
         this.selectedRole = null;
         this.modalService.dismissAll();
@@ -150,12 +174,12 @@ export class ViewCompanyComponent implements OnInit {
       : '';
   }
 
-  // Returns true if the current user is a company_admin in company.members
   get isCompanyAdmin(): boolean {
     const userId = localStorage.getItem('userId');
     return Array.isArray(this.company?.members)
       ? this.company.members.some((m: any) => m.id === userId && Array.isArray(m.roles) && m.roles.includes('company_admin'))
       : false;
   }
+
 
 }
