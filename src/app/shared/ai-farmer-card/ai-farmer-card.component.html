@@ -57,14 +57,14 @@
             </div>
             <div class="small text-muted mt-1" *ngIf="form.value.outfit">{{ outfitDesc }}</div>
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label class="form-label">Photo Type <span class="text-danger">*</span></label>
             <div class="d-flex gap-2 flex-wrap">
               <button type="button" *ngFor="let pt of photoTypes" class="btn btn-outline-secondary" [class.active]="form.value.photoType === pt.value" (click)="form.patchValue({ photoType: pt.value })">
                 <span class="fs-3">{{ pt.icon }}</span> {{ pt.label }}
               </button>
             </div>
-          </div>
+          </div> -->
           <div class="mb-3">
             <label class="form-label">Lighting <span class="text-danger">*</span></label>
             <div class="d-flex gap-2 flex-wrap">

@@ -29,7 +29,7 @@ export const routes: Routes = [
             { path: '', component: SocialCard },
             { path: 'blog/:blogId/:blogTitle', component: SocialCard },
             { path: 'category/:categoryId', component: BlogListing },
-            { path: ':categoryId/create-post', component: CreatePostComponent, /* canActivate: [AuthGuard] */ },
+            { path: ':categoryId/create-post', component: CreatePostComponent, canActivate: [AuthGuard] },
             {
                 path: 'view-profile/:userId',
                 loadComponent: () => import('./pages/view-profile/view-profile.component').then(m => m.ViewProfileComponent)
@@ -44,15 +44,15 @@ export const routes: Routes = [
                 canActivateChild: [AuthGuard]
             },
             {
-                path: 'ai-farmer-generator',
+                path: 'ai-farmer-generator', canActivate: [AuthGuard],
                 loadComponent: () => import('./shared/ai-farmer-card/ai-farmer-card.component').then(m => m.AiFarmerCardComponent)
             },
             {
-                path: 'ai-avatar-history',
+                path: 'ai-avatar-history', canActivate: [AuthGuard],
                 loadComponent: () => import('./pages/ai-avatar-history/ai-avatar-history.component').then(m => m.AiAvatarHistoryComponent)
             },
             {
-                path: 'points-referrals',
+                path: 'points-referrals', canActivate: [AuthGuard],
                 loadComponent: () => import('./pages/points-referrals/points-referrals.component').then(m => m.PointsReferralsComponent)
             },
             {
