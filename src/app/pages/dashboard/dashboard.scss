@@ -8,20 +8,36 @@
 
 :host {
     display: block;
-    background-image: url("/farm-bg.jpg");
-    background-attachment: fixed;
-    background-position: center;
     position: relative;
     min-height: 100vh;
 }
 
 :host::before {
     content: "";
-    display: block;
-    width: 100%;
-    height: 100%;
     position: fixed;
-    background-color: #ffffffc9;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background-image: url(/farm-bg.jpg);
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+:host::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.7882352941);
+    pointer-events: none;
 }
 
 .sidebar {

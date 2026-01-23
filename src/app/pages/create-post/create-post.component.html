@@ -1,9 +1,9 @@
 <div class="container py-2" style="max-width:480px;">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit(); form.markAllAsTouched()">
     <div class="mb-3">
       <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
       <editor id="description" [init]="tinymceConfig" licenseKey="gpl" [formControl]="descriptionControl"></editor>
-      <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-danger small">Description is required.</div>
+      <div *ngIf="form.get('description')?.invalid && (form.get('description')?.touched || form.touched || form.dirty)" class="text-danger small">Description is required.</div>
     </div>
     <div class="row mb-3">
       <div class="col-6">
@@ -12,7 +12,7 @@
           <option value="" disabled>Select language</option>
           <option *ngFor="let lang of languages" [value]="lang.isoCode">{{ lang.name }}</option>
         </select>
-        <div *ngIf="form.get('language')?.invalid && form.get('language')?.touched" class="text-danger small">Language is required.</div>
+        <div *ngIf="form.get('language')?.invalid && (form.get('language')?.touched || form.touched || form.dirty)" class="text-danger small">Language is required.</div>
       </div>
       <div class="col-12">
         <label class="form-label">Categories <span class="text-danger">*</span></label>
@@ -24,7 +24,7 @@
             </div>
           </div>
         </div>
-        <div *ngIf="form.get('categories')?.invalid && form.get('categories')?.touched" class="text-danger small">At least one category is required.</div>
+        <div *ngIf="form.get('categories')?.invalid && (form.get('categories')?.touched || form.touched || form.dirty)" class="text-danger small">At least one category is required.</div>
       </div>
     </div>
     <div class="mb-3">
@@ -49,8 +49,8 @@
       </div>
     </div>
     <div class="d-flex gap-2 mt-3">
-      <button *ngIf="!postId" type="submit" class="btn btn-primary flex-fill">Create Post</button>
-      <button *ngIf="postId && canEditOrDelete" type="submit" class="btn btn-success flex-fill">Update Post</button>
+      <button *ngIf="!postId" type="submit" class="btn btn-primary flex-fill" [disabled]="form.invalid || uploadingImages || uploadingVideos">Create Post</button>
+      <button *ngIf="postId && canEditOrDelete" type="submit" class="btn btn-success flex-fill" [disabled]="form.invalid || uploadingImages || uploadingVideos">Update Post</button>
       <!-- Delete button removed; should be in SocialCard component -->
     </div>
   </form>

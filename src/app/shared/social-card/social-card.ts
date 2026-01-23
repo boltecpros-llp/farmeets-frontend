@@ -174,7 +174,7 @@ export class SocialCard implements OnInit, AfterViewInit {
             fontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize));
             this.renderer.setStyle(el, 'font-size', fontSize + 'px');
             this.renderer.setStyle(el, 'display', 'flex');
-            this.renderer.setStyle(el, 'align-items', 'center');
+            this.renderer.setStyle(el, 'align-items', 'start');
             this.renderer.setStyle(el, 'justify-content', 'center');
             this.renderer.setStyle(el, 'text-align', 'center');
             this.renderer.setStyle(el, 'overflow-y', 'auto');
@@ -197,9 +197,10 @@ export class SocialCard implements OnInit, AfterViewInit {
     }
 
     /**
- * Returns true if the current card's graphic text is scrollable and not at end
- */
-    private isGraphicTextScrollPending(): boolean {
+     * Returns true if the current card's graphic text is scrollable and not at end (down) or not at top (up)
+     * @param direction 'down' | 'up'
+     */
+    private isGraphicTextScrollPending(direction: 'down' | 'up' = 'down'): boolean {
         if (!this.postCards.length) return false;
         const card = this.postCards[this.currentIndex];
         if (!card) return false;
@@ -207,8 +208,13 @@ export class SocialCard implements OnInit, AfterViewInit {
         if (!graphicText) return false;
         const isScrollable = graphicText.style.overflowY === 'auto' || getComputedStyle(graphicText).overflowY === 'auto';
         if (!isScrollable) return false;
-        // Check if not at end
-        return graphicText.scrollTop + graphicText.clientHeight < graphicText.scrollHeight - 1;
+        if (direction === 'down') {
+            // Check if not at end
+            return graphicText.scrollTop + graphicText.clientHeight < graphicText.scrollHeight - 1;
+        } else {
+            // Check if not at top
+            return graphicText.scrollTop > 1;
+        }
     }
 
     fetchBlogs(reset: boolean = false) {
@@ -286,6 +292,12 @@ export class SocialCard implements OnInit, AfterViewInit {
                     if (linkUrl && showCaption && descriptionText.includes(linkUrl)) {
                         captionText = descriptionText.replace(linkUrl, '').replace(/\s+/g, ' ').trim();
                     }
+                    // Hide caption for text-only posts (no image, no socialLink.image, no post.images)
+                    const hasImage = Array.isArray(item.images) && item.images.length > 0;
+                    const hasPreviewImage = item.socialLink?.image;
+                    if (!hasImage && !hasPreviewImage) {
+                        showCaption = false;
+                    }
                     return {
                         ...item,
                         textStyle: randomStyle,
@@ -357,12 +369,16 @@ export class SocialCard implements OnInit, AfterViewInit {
         if (this.disableScroll) return;
         if (this.isScrolling) return;
         if (e.deltaY > 0) {
-            if (this.isGraphicTextScrollPending()) {
+            if (this.isGraphicTextScrollPending('down')) {
                 // Let user scroll graphic text, not card
                 return;
             }
             this.scrollToPost(this.currentIndex + 1);
         } else if (e.deltaY < 0) {
+            if (this.isGraphicTextScrollPending('up')) {
+                // Let user scroll graphic text up, not card
+                return;
+            }
             this.scrollToPost(this.currentIndex - 1);
         }
     }

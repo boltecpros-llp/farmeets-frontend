@@ -116,8 +116,24 @@
 
 .post-actions {
   right: 16px;
-  bottom: 18vh;
+  bottom: 15vh;
   z-index: 99;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 50px;
+    height: 110px;
+    background: #00000070;
+    z-index: -1;
+    top: -50%;
+    bottom: -50%;
+    left: -50%;
+    right: -50%;
+    margin: auto;
+    filter: blur(17px);
+  }
 
   .btn {
     color: #ffffff !important;
